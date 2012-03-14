@@ -1,3 +1,5 @@
+global.$shed = global.$shed || {};
+
 var print = function(value) {
     process.stdout.write(value);
 };
@@ -18,4 +20,14 @@ var $number = function(value) {
             return value.toString();
         }
     };
+};
+    
+var $exportModule = function(name, value) {
+    var parts = name.split(".");
+    var current = $shed;
+    for (var i = 0; i < parts.length - 1; i += 1) {
+        current[parts[i]] = current[parts[i]] || {};
+        current = current[parts[i]];
+    }
+    current[parts[parts.length - 1]] = value;
 };
