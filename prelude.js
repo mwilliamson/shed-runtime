@@ -1,8 +1,8 @@
 global.$shed = global.$shed || {};
 $shed.modules = $shed.modules || {};
 
-var print = function(value) {
-    process.stdout.write(value);
+var print = function(string) {
+    process.stdout.write(string.$value);
 };
 
 (function() {
@@ -19,7 +19,16 @@ var print = function(value) {
                 return number(value + other.$value);
             },
             toString: function() {
-                return value.toString();
+                return string(value.toString());
+            }
+        };
+    };
+    
+    var string = $shed.string = function(value) {
+        return {
+            $value: value,
+            concat: function(other) {
+                return string(value + other.$value);
             }
         };
     };
