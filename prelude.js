@@ -6,6 +6,9 @@ var print = function(string) {
 };
 
 (function() {
+    var modules = {
+    };
+    
     var number = $shed.number = function(value) {
         return {
             $value: value,
@@ -33,13 +36,33 @@ var print = function(string) {
         };
     };
         
-    $shed.exportModule = function(name, value) {
-        var parts = name.split(".");
-        var current = $shed;
-        for (var i = 0; i < parts.length - 1; i += 1) {
-            current[parts[i]] = current[parts[i]] || {};
-            current = current[parts[i]];
+    $shed.exportModule = function(name, func) {
+        var evaluate = function() {
+            var value = func();
+            modules[name].value = value;
+            modules[name].evaluated = true;
+            var parts = name.split(".");
+            var current = $shed;
+            for (var i = 0; i < parts.length - 1; i += 1) {
+                current[parts[i]] = current[parts[i]] || {};
+                current = current[parts[i]];
+            }
+            current[parts[parts.length - 1]] = value;
+        };
+        modules[name] = {
+            evaluate: evaluate,
+            evaluated: false,
+            value: null
+        };
+    };
+
+    $shed.import = function(name) {
+        var module = modules[name.$value];
+        if (!module.evaluated) {
+            module.evaluate();
         }
-        current[parts[parts.length - 1]] = value;
+        return module.value;
     };
 })();
+
+var $import = $shed.import;
