@@ -63,6 +63,19 @@ var print = function(string) {
         }
         return module.value;
     };
+    
+    var ImmutableArrayList = function(values) {
+        return {
+            forEach: values.forEach.bind(values)
+        };
+    };
+    
+    $shed.lists = {
+        create: function() {
+            return ImmutableArrayList(Array.prototype.slice.call(arguments, 0));
+        }
+    };
 })();
 
 var $import = $shed.import;
+var $lists = $shed.lists;
