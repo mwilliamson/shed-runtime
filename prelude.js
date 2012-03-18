@@ -66,7 +66,10 @@ var print = function(string) {
     
     var ImmutableArrayList = function(values) {
         return {
-            forEach: values.forEach.bind(values)
+            forEach: values.forEach.bind(values),
+            isEmpty: function() {
+                return values.length === 0;
+            }
         };
     };
     
