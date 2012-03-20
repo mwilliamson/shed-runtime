@@ -1,10 +1,6 @@
 global.$shed = global.$shed || {};
 $shed.modules = $shed.modules || {};
 
-var print = function(string) {
-    process.stdout.write(string.$value);
-};
-
 (function() {
     var modules = {
     };
@@ -69,6 +65,9 @@ var print = function(string) {
             forEach: values.forEach.bind(values),
             isEmpty: function() {
                 return values.length === 0;
+            },
+            head: function() {
+                return values[0];
             }
         };
     };
@@ -76,9 +75,18 @@ var print = function(string) {
     $shed.lists = {
         create: function() {
             return ImmutableArrayList(Array.prototype.slice.call(arguments, 0));
+        },
+        createFromArray: function(array) {
+            return ImmutableArrayList(array);
         }
     };
 })();
 
 var $import = $shed.import;
 var $lists = $shed.lists;
+
+var print = function(string) {
+    process.stdout.write(string.$value);
+};
+
+var runtimeImport = $import;
