@@ -60,11 +60,14 @@ $shed.modules = $shed.modules || {};
         }
         var module = moduleResult.module;
         if (!module.evaluated) {
-            module.evaluate();  
+            module.evaluate();
         }
         
         var value = module.value;
         for (var depth = moduleResult.depth; depth < identifiers.length; depth += 1) {
+            if (!Object.prototype.hasOwnProperty.call(value, identifiers[depth])) {
+                throw new Error("Could not find module: " + name.$value);
+            }
             value = value[identifiers[depth]];
         }
         return value;
