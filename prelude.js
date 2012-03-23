@@ -53,11 +53,34 @@ $shed.modules = $shed.modules || {};
     };
 
     $shed.import = function(name) {
-        var module = modules[name.$value];
-        if (!module.evaluated) {
-            module.evaluate();
+        var identifiers = name.$value.split(".");
+        var moduleResult = findParentModule(identifiers);
+        if (!moduleResult) {
+            throw new Error("Could not find module: " + name.$value);
         }
-        return module.value;
+        var module = moduleResult.module;
+        if (!module.evaluated) {
+            module.evaluate();  
+        }
+        
+        var value = module.value;
+        for (var depth = moduleResult.depth; depth < identifiers.length; depth += 1) {
+            value = value[identifiers[depth]];
+        }
+        return value;
+    };
+    
+    var findParentModule = function(identifiers) {
+        for (var depth = identifiers.length; depth >= 1; depth -= 1) {
+            var module = modules[identifiers.slice(0, depth).join(".")];
+            if (module) {
+                return {
+                    module: module,
+                    depth: depth
+                };
+            }
+        }
+        return null;
     };
     
     var ImmutableArrayList = function(values) {
