@@ -28,6 +28,9 @@ $shed.modules = $shed.modules || {};
             $value: value,
             concat: function(other) {
                 return string(value + other.$value);
+            },
+            equals: function(other) {
+                return value === other.$value;
             }
         };
     };
@@ -117,3 +120,4 @@ var print = function(string) {
 
 var runtimeImport = $import;
 var listOf = $shed.lists.create;
+var String = $shed.string;
