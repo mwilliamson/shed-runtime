@@ -116,3 +116,4 @@ var print = function(string) {
 };
 
 var runtimeImport = $import;
+var listOf = $shed.lists.create;
