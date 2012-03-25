@@ -152,3 +152,11 @@ var String = $shed.string;
 var not = function(value) {
     return !value;
 };
+
+var representation = function(value) {
+    if (value.toRepresentation) {
+        return value.toRepresentation();
+    } else {
+        return $shed.string("<object without toRepresentation>");
+    }
+};
