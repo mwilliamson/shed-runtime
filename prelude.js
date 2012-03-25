@@ -24,15 +24,22 @@ $shed.modules = $shed.modules || {};
     };
     
     var string = $shed.string = function(value) {
-        return {
+        var self = {
             $value: value,
             concat: function(other) {
                 return string(value + other.$value);
             },
             equals: function(other) {
                 return value === other.$value;
+            },
+            toString: function() {
+                return self;
+            },
+            toRepresentation: function() {
+                return string(JSON.stringify(value));
             }
         };
+        return self;
     };
         
     $shed.exportModule = function(name, func) {
@@ -92,11 +99,32 @@ $shed.modules = $shed.modules || {};
     var ImmutableArrayList = function(values) {
         return {
             forEach: values.forEach.bind(values),
+            map: function(func) {
+                return ImmutableArrayList(values.map(func));
+            },
+            filter: function(predicate) {
+                return ImmutableArrayList(values.filter(predicate));
+            },
+            foldLeft: function(initialValue, func) {
+                return values.reduce(func, initialValue);
+            },
             isEmpty: function() {
                 return values.length === 0;
             },
+            length: function() {
+                return number(values.length);
+            },
             head: function() {
                 return values[0];
+            },
+            append: function(value) {
+                return ImmutableArrayList(values.concat([value]));
+            },
+            concat: function(other) {
+                return ImmutableArrayList(values.concat(other.$toJsArray()));
+            },
+            $toJsArray: function() {
+                return values;
             }
         };
     };
@@ -121,3 +149,6 @@ var print = function(string) {
 var runtimeImport = $import;
 var listOf = $shed.lists.create;
 var String = $shed.string;
+var not = function(value) {
+    return !value;
+};
