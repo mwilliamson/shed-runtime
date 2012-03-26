@@ -130,11 +130,15 @@ $shed.modules = $shed.modules || {};
     };
     
     $shed.lists = {
-        create: function() {
-            return ImmutableArrayList(Array.prototype.slice.call(arguments, 0));
+        create: function(T) {
+            return function() {
+                return ImmutableArrayList(Array.prototype.slice.call(arguments, 0));
+            };
         },
-        createFromArray: function(array) {
-            return ImmutableArrayList(array);
+        createFromArray: function(T) {
+            return function(array) {
+                return ImmutableArrayList(array);
+            };
         }
     };
 })();
@@ -160,3 +164,6 @@ var representation = function(value) {
         return $shed.string("<object without toRepresentation>");
     }
 };
+
+var Nothing = {};
+var emptyList = listOf(Nothing)();
