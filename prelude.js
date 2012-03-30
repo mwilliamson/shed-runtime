@@ -194,13 +194,10 @@ var join = function(shedJoiner, shedSequence) {
 // within the function. Use with caution.
 function withTypeParameterInference(func) {
     return function() {
-        console.log(arguments);
         var containsShedType = Array.prototype.some.call(arguments, isShedType);
         if (containsShedType) {
-            console.log(1);
             return func.apply(this, arguments);
         } else {
-            console.log(2);
             return func().apply(this, arguments);
         }
     };
