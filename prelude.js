@@ -1,6 +1,10 @@
 global.$shed = global.$shed || {};
 $shed.modules = $shed.modules || {};
 
+var dummyType = {
+    $isShedType: true
+};
+
 (function() {
     var modules = {
     };
@@ -151,7 +155,7 @@ var print = function(string) {
 };
 
 var runtimeImport = $import;
-var listOf = $shed.lists.create;
+var listOf = withTypeParameterInference($shed.lists.create);
 var String = $shed.string;
 var not = function(value) {
     return !value;
@@ -165,5 +169,43 @@ var representation = function(value) {
     }
 };
 
-var Nothing = {};
+var Nothing = dummyType;
 var emptyList = listOf(Nothing)();
+var Func = function() {
+    return dummyType;
+};
+var List = function() {
+    return dummyType;
+};
+var join = function(shedJoiner, shedSequence) {
+    var jsStrings = shedSequence.map(function(shedString) {
+        return shedString.$value;
+    }).$toJsArray();
+    return $shed.string(jsStrings.join(shedJoiner.$value));
+};
+
+// Yes! It's a hack! To get around the fact that the Shed compiler does not
+// currently implement type inference, and therefore cannot infer type parameters,
+// we infer them at runtime. Note this will fail miserably when attempting
+// to infer type parameters when the arguments of a function are types
+// (but I imagine that this is sufficiently rare that it shouldn't bite us.
+// Hopefully).
+// More critically, it means that the type parameters will all be undefined
+// within the function. Use with caution.
+function withTypeParameterInference(func) {
+    return function() {
+        console.log(arguments);
+        var containsShedType = Array.prototype.some.call(arguments, isShedType);
+        if (containsShedType) {
+            console.log(1);
+            return func.apply(this, arguments);
+        } else {
+            console.log(2);
+            return func().apply(this, arguments);
+        }
+    };
+}
+
+function isShedType(shedObj) {
+    return shedObj.$isShedType;
+};
