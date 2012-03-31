@@ -160,6 +160,11 @@ var String = $shed.string;
 var not = function(value) {
     return !value;
 };
+var and = function() {
+    return Array.prototype.slice.call(arguments, 0).some(function(value) {
+        return !!value;
+    });
+};
 
 var representation = function(value) {
     if (value.toRepresentation) {
@@ -182,6 +187,68 @@ var join = function(shedJoiner, shedSequence) {
         return shedString.$value;
     }).$toJsArray();
     return $shed.string(jsStrings.join(shedJoiner.$value));
+};
+
+// Assumes all inputs are the same length
+var zip = function() {
+    var lists = Array.prototype.map.call(arguments, function(list) {
+        return list.$toJsArray();
+    });
+    var result = [];
+    for (var listsIndex = 0; listsIndex < lists[0].length; listsIndex += 1) {
+        result[listsIndex] = tuple(lists.map(function(list) {
+            return list[listsIndex];
+        }));
+    };
+    return $shed.lists.createFromArray()(result);
+};
+
+var tuple = function(values) {
+    return values;
+};
+
+var pack = function(func) {
+    return function(tuple) {
+        return func.apply(this, tuple);
+    };
+};
+
+var any = function(list) {
+    return list.$toJsArray().some(function(value) {
+        return value;
+    });
+};
+
+var all = function(list) {
+    return list.$toJsArray().every(function(value) {
+        return value;
+    });
+};
+
+var range = function(from, to) {
+    var result = [];
+    for (var i = from.$value; i < to.$value; i += 1) {
+        result.push($shed.number(i));
+    }
+    return $shed.lists.createFromArray($shed.number)(result);
+};
+
+var none = {
+    $toJsArray: function() {
+        return [];
+    }
+};
+
+var some = function(value) {
+    return {
+        $toJsArray: function() {
+            return [value];
+        }
+    };
+};
+
+var concat = function(first, second) {
+    return $shed.lists.createFromArray()(first.$toJsArray().concat(second.$toJsArray()));
 };
 
 // Yes! It's a hack! To get around the fact that the Shed compiler does not
