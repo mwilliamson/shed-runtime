@@ -13,7 +13,10 @@ var dummyType = {
         return {
             $value: value,
             equals: function(other) {
-                return value === other.$value;
+                return boolean(value === other.$value);
+            },
+            greaterThan: function(other) {
+                return boolean(value > other.$value);
             },
             subtract: function(other) {
                 return number(value - other.$value);
@@ -36,6 +39,9 @@ var dummyType = {
             equals: function(other) {
                 return value === other.$value;
             },
+            length: function(other) {
+                return number(value.length);
+            },
             toString: function() {
                 return self;
             },
@@ -44,6 +50,10 @@ var dummyType = {
             }
         };
         return self;
+    };
+    
+    var boolean = $shed.boolean = function(value) {
+        return value;
     };
         
     $shed.exportModule = function(name, func) {
@@ -161,7 +171,7 @@ var not = function(value) {
     return !value;
 };
 var and = function() {
-    return Array.prototype.slice.call(arguments, 0).some(function(value) {
+    return Array.prototype.slice.call(arguments, 0).every(function(value) {
         return !!value;
     });
 };
@@ -273,3 +283,17 @@ function withTypeParameterInference(func) {
 function isShedType(shedObj) {
     return shedObj.$isShedType;
 };
+
+$shed.exportModule("regex", function() {
+    return {
+        create: function(shedRegexString) {
+            var regex = new RegExp(shedRegexString.$value);
+            return {
+                $isShedType: $shed.boolean(true),
+                test: function(shedString) {
+                    return $shed.boolean(regex.test(shedString.$value));
+                }
+            };
+        }
+    };
+});
