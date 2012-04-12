@@ -158,6 +158,12 @@ var dummyType = {
             };
         }
     };
+    
+    $shed.js = {
+        import: function(name) {
+            return $shed.import($shed.string(name));
+        }
+    };
 })();
 
 var $import = $shed.import;
@@ -287,9 +293,58 @@ function isShedType(shedObj) {
     return shedObj.$isShedType;
 };
 
+$shed.exportModule("options", function() {
+    // TODO: should we just choose one of orElseDo and orElse to be orElse?
+    var none = {
+        map: function(R) {
+            return function(func) {
+                return none;
+            }
+        },
+        orElseDo: function(func) {
+            return func();
+        },
+        orElse: function(value) {
+            return value;
+        }
+    };
+    var some = function(T) {
+        return function(value) {
+            return {
+                map: function(R) {
+                    return function(func) {
+                        return some(R)(func(value));
+                    }
+                },
+                orElseDo: function(func) {
+                    return value;
+                },
+                orElse: function(other) {
+                    return value;
+                }
+            };
+        };
+    };
+    return {
+        some: some,
+        none: none
+    };
+});
+
 $shed.exportModule("regex", function() {
+    var options = $shed.js.import("options");
     return {
         create: function(shedRegexString) {
+            var RegexResult = function(jsResult) {
+                return {
+                    $isShedType: true,
+                    capture: function(index) {
+                        return $shed.string(jsResult[index.$value]);
+                    }
+                };
+            };
+            RegexResult.$isShedType = true;
+            
             var regex = new RegExp(shedRegexString.$value);
             return {
                 $isShedType: $shed.boolean(true),
@@ -298,12 +353,10 @@ $shed.exportModule("regex", function() {
                 },
                 exec: function(shedString) {
                     var result = regex.exec(shedString.$value);
-                    // TODO: handle failure
-                    return {
-                        $isShedType: true,
-                        capture: function(index) {
-                            return $shed.string(result[index.$value]);
-                        }
+                    if (result === null) {
+                        return options.none;
+                    } else {
+                        return options.some(RegexResult)(RegexResult(result));
                     };
                 }
             };
