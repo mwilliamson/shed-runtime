@@ -295,6 +295,16 @@ $shed.exportModule("regex", function() {
                 $isShedType: $shed.boolean(true),
                 test: function(shedString) {
                     return $shed.boolean(regex.test(shedString.$value));
+                },
+                exec: function(shedString) {
+                    var result = regex.exec(shedString.$value);
+                    // TODO: handle failure
+                    return {
+                        $isShedType: true,
+                        capture: function(index) {
+                            return $shed.string(result[index.$value]);
+                        }
+                    };
                 }
             };
         }
