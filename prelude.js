@@ -42,6 +42,9 @@ var dummyType = {
             length: function(other) {
                 return number(value.length);
             },
+            slice: function(index) {
+                return string(value.slice(index.$value));
+            },
             toString: function() {
                 return self;
             },
