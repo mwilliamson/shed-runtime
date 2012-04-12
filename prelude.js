@@ -301,28 +301,29 @@ $shed.exportModule("options", function() {
                 return none;
             }
         },
-        orElseDo: function(func) {
+        orElse: function(func) {
             return func();
         },
-        orElse: function(value) {
-            return value;
+        valueOrElse: function(func) {
+            return func();
         }
     };
     var some = function(T) {
         return function(value) {
-            return {
+            var self = {
                 map: function(R) {
                     return function(func) {
                         return some(R)(func(value));
                     }
                 },
-                orElseDo: function(func) {
-                    return value;
+                orElse: function(func) {
+                    return self;
                 },
-                orElse: function(other) {
+                valueOrElse: function(func) {
                     return value;
                 }
             };
+            return self;
         };
     };
     return {
