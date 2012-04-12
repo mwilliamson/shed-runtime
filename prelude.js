@@ -9,6 +9,8 @@ var dummyType = {
     var modules = {
     };
     
+    $shed.unit = {};
+    
     var number = $shed.number = function(value) {
         return {
             $value: value,
