@@ -254,10 +254,6 @@ var range = function(from, to) {
     return $shed.lists.createFromArray($shed.number)(result);
 };
 
-var concat = function(first, second) {
-    return $shed.lists.createFromArray()(first.$toJsArray().concat(second.$toJsArray()));
-};
-
 // Yes! It's a hack! To get around the fact that the Shed compiler does not
 // currently implement type inference, and therefore cannot infer type parameters,
 // we infer them at runtime. Note this will fail miserably when attempting
