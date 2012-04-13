@@ -67,7 +67,7 @@ var dummyType = {
             modules[name].value = value;
             modules[name].evaluated = true;
             var parts = name.split(".");
-            var current = $shed;
+            var current = $shed.modules;
             for (var i = 0; i < parts.length - 1; i += 1) {
                 current[parts[i]] = current[parts[i]] || {};
                 current = current[parts[i]];
@@ -254,6 +254,10 @@ var range = function(from, to) {
     return $shed.lists.createFromArray($shed.number)(result);
 };
 
+var concat = function(first, second) {
+    return $shed.lists.createFromArray()(first.$toJsArray().concat(second.$toJsArray()));
+};
+
 var none = {
     $toJsArray: function() {
         return [];
@@ -266,10 +270,6 @@ var some = function(value) {
             return [value];
         }
     };
-};
-
-var concat = function(first, second) {
-    return $shed.lists.createFromArray()(first.$toJsArray().concat(second.$toJsArray()));
 };
 
 // Yes! It's a hack! To get around the fact that the Shed compiler does not
@@ -295,3 +295,47 @@ function isShedType(shedObj) {
     return shedObj.$isShedType;
 };
 
+$shed.exportModule("sequences", function() {
+    var forEachTrampolined = function(T) {
+        return function(sequence, func) {
+            func(sequence.head());
+            return sequence.tail().map(T)(function(tail) {
+                return function() {
+                    return forEachTrampolined(T)(tail, func);
+                };
+            }).valueOrElse(T)(function() {
+                return null;
+            });
+        };
+    };
+    var forEach = function(T) {
+        return function(sequence, func) {
+            var next = function() {
+                return forEachTrampolined(T)(sequence, func);
+            };
+            while (next !== null) {
+                next = next();
+            }
+        };
+    };
+    return {
+        forEach: forEach
+    };
+});
+
+$shed.exportModule("lists", function() {
+    var options = $shed.js.import("options");
+    var sequences = $shed.js.import("sequences");
+    var sequenceToList = function(T) {
+        return function(sequence) {
+            var result = [];
+            sequences.forEach(T)(sequence, function(value) {
+                result.push(value);
+            });
+            return $shed.lists.createFromArray(T)(result);
+        };
+    };
+    return {
+        sequenceToList: sequenceToList
+    };
+});
