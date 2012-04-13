@@ -258,20 +258,6 @@ var concat = function(first, second) {
     return $shed.lists.createFromArray()(first.$toJsArray().concat(second.$toJsArray()));
 };
 
-var none = {
-    $toJsArray: function() {
-        return [];
-    }
-};
-
-var some = function(value) {
-    return {
-        $toJsArray: function() {
-            return [value];
-        }
-    };
-};
-
 // Yes! It's a hack! To get around the fact that the Shed compiler does not
 // currently implement type inference, and therefore cannot infer type parameters,
 // we infer them at runtime. Note this will fail miserably when attempting
