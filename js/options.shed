@@ -1,3 +1,5 @@
+import _sequences;
+
 public val options = object {
     public val none = object {
         public def map fun[R] => (func: Function[Nothing, R]) =>
@@ -8,6 +10,9 @@ public val options = object {
         
         public def valueOrElse fun[T2] => (func: Function[T2]) =>
             func();
+            
+        public def toSequence fun() =>
+            _sequences.nil;
     };
     
     public def some class[T] => (value: T) => {
@@ -24,5 +29,8 @@ public val options = object {
             
         public def valueOrElse fun[T2] => (func: Function[T2]) =>
             value;
+            
+        public def toSequence fun() =>
+            _sequences.cons[T](value, _sequences.nil);
     };
 };

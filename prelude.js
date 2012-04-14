@@ -144,6 +144,26 @@ var dummyType = {
             },
             $toJsArray: function() {
                 return values;
+            },
+            toSequence: function() {
+                // HACK: should really define ImmutableArrayList later to avoid this late import
+                var sequences = $shed.js.import("sequences");
+                var T = null; // TODO: ImmutableArrayList should really be type parameterised
+                
+                var sequence = function(index) {
+                    if (values.length === index) {
+                        return sequences.nil;
+                    } else {
+                        return sequences.lazyCons(T)(
+                            values[index],
+                            function() {
+                                return sequence(index + 1);
+                            }
+                        );
+                    }
+                };
+                
+                return sequence(0);
             }
         };
     };
@@ -277,17 +297,62 @@ function isShedType(shedObj) {
     return shedObj.$isShedType;
 };
 
-$shed.exportModule("sequences", function() {
+$shed.exportModule("_sequences", function() {
+    var nil = {};
+    var cons = function(T) {
+        return function(head, tail) {
+            return {
+                head: function() {
+                    return head;
+                },
+                tail: function() {
+                    return tail;
+                }
+            };
+        };
+    };
+    return {
+        nil: nil,
+        cons: cons
+    };
+});
+
+$shed.exportModule("sequences", function() {    
+    var _sequences = $shed.js.import("_sequences");
+    var options = $shed.js.import("options");
+    var nil = _sequences.nil;
+    
+    var head = function(T) {
+        return function(sequence) {
+            if (sequence === nil) {
+                return options.none;
+            } else {
+                return options.some(T)(sequence.head());
+            }
+        };
+    };
+    
+    var lazyCons = function(T) {
+        return function(head, deferredTail) {
+            return {
+                head: function() {
+                    return head;
+                },
+                tail: deferredTail
+            };
+        };
+    };
+    
     var forEachTrampolined = function(T) {
         return function(sequence, func) {
-            func(sequence.head());
-            return sequence.tail().map(T)(function(tail) {
-                return function() {
-                    return forEachTrampolined(T)(tail, func);
-                };
-            }).valueOrElse(T)(function() {
+            if (sequence === nil) {
                 return null;
-            });
+            } else {
+                func(sequence.head());
+                return function() {
+                    return forEachTrampolined(T)(sequence.tail(), func);
+                };
+            }
         };
     };
     var forEach = function(T) {
@@ -300,8 +365,112 @@ $shed.exportModule("sequences", function() {
             }
         };
     };
+    var singleton = function(T) {
+        return function(value) {
+            return _sequences.cons(T)(value, _sequences.nil);
+        };
+    };
+        
     return {
-        forEach: forEach
+        forEach: forEach,
+        nil: nil,
+        head: head,
+        lazyCons: lazyCons,
+        singleton: singleton
+    };
+});
+
+$shed.exportModule("sequenceables", function() {
+    var sequences = $shed.js.import("sequences");
+    var head = function(T) {
+        return function(sequenceable) {
+            return sequences.head(T)(sequenceable.toSequence());
+        };
+    };
+    return {
+        head: head
+    };
+});
+
+$shed.exportModule("lazySequences", function() {
+    var sequences = $shed.js.import("sequences");
+    var map = function(F, T) {
+        return function(func, sequence) {
+            if (sequence === sequences.nil) {
+                return sequence;
+            } else {
+                return {
+                    head: function() {
+                        return func(sequence.head());
+                    },
+                    tail: function() {
+                        return map(F, T)(func, sequence.tail());
+                    }
+                };
+            }
+        };
+    };
+    var concat = function(T) {
+        return function(sequenceOfSequences) {
+            if (sequenceOfSequences === sequences.nil) {
+                return sequences.nil;
+            } else {
+                var headSequence = sequenceOfSequences.head();
+                if (headSequence === sequences.nil) {
+                    return concat(T)(sequenceOfSequences.tail());
+                } else {
+                    return {
+                        head: function() {
+                            return headSequence.head();
+                        },
+                        tail: function() {
+                            return concat(sequence.cons(
+                                headSequence.tail(),
+                                sequenceOfSequences.tail()
+                            ));
+                        }
+                    };
+                }
+            }
+        };
+    };
+    return {
+        map: map,
+        concat: concat
+    };
+});
+
+$shed.exportModule("lazySequenceables", function() {
+    var lazySequences = $shed.js.import("lazySequences");
+    
+    var sequenceToSequenceable = function(sequence) {
+        return {
+            toSequence: function() {
+                return sequence;
+            }
+        };
+    };
+    
+    var map = function(F, T) {
+        return function(func, sequenceable) {
+            var sequence = lazySequences.map(F, T)(func, sequenceable.toSequence());
+            return sequenceToSequenceable(sequence);
+        };
+    };
+    var concat = function(T) {
+        return function(sequenceableOfSequenceables) {
+            var toSequence = function(sequenceable) {
+                return sequenceable.toSequence();
+            };
+            // TODO: should be map(Sequenceable(T), Sequence(T))
+            var sequenceOfSequences = toSequence(map(null, null)(toSequence, sequenceableOfSequenceables));
+            var sequence = lazySequences.concat(T)(sequenceOfSequences);
+            return sequenceToSequenceable(sequence);
+        };
+    };
+    return {
+        map: map,
+        concat: concat
     };
 });
 
