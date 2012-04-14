@@ -344,21 +344,21 @@ $shed.exportModule("sequences", function() {
     };
     
     var forEachTrampolined = function(T) {
-        return function(sequence, func) {
+        return function(func, sequence) {
             if (sequence === nil) {
                 return null;
             } else {
                 func(sequence.head());
                 return function() {
-                    return forEachTrampolined(T)(sequence.tail(), func);
+                    return forEachTrampolined(T)(func, sequence.tail());
                 };
             }
         };
     };
     var forEach = function(T) {
-        return function(sequence, func) {
+        return function(func, sequence) {
             var next = function() {
-                return forEachTrampolined(T)(sequence, func);
+                return forEachTrampolined(T)(func, sequence);
             };
             while (next !== null) {
                 next = next();
@@ -480,9 +480,9 @@ $shed.exportModule("lists", function() {
     var sequenceToList = function(T) {
         return function(sequence) {
             var result = [];
-            sequences.forEach(T)(sequence, function(value) {
+            sequences.forEach(T)(function(value) {
                 result.push(value);
-            });
+            }, sequence);
             return $shed.lists.createFromArray(T)(result);
         };
     };
