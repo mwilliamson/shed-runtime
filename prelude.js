@@ -230,20 +230,6 @@ var join = function(shedJoiner, shedSequence) {
     return $shed.string(jsStrings.join(shedJoiner.$value));
 };
 
-// Assumes all inputs are the same length
-var zip = function() {
-    var lists = Array.prototype.map.call(arguments, function(list) {
-        return list.$toJsArray();
-    });
-    var result = [];
-    for (var listsIndex = 0; listsIndex < lists[0].length; listsIndex += 1) {
-        result[listsIndex] = tuple(lists.map(function(list) {
-            return list[listsIndex];
-        }));
-    };
-    return $shed.lists.createFromArray()(result);
-};
-
 var tuple = function(values) {
     return values;
 };

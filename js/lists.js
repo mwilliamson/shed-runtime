@@ -10,7 +10,23 @@ $shed.exportModule("lists", function() {
             return $shed.lists.createFromArray(T)(result);
         };
     };
+
+    // Assumes all inputs are the same length
+    var zip = function() {
+        var lists = Array.prototype.map.call(arguments, function(list) {
+            return list.$toJsArray();
+        });
+        var result = [];
+        for (var listsIndex = 0; listsIndex < lists[0].length; listsIndex += 1) {
+            result[listsIndex] = tuple(lists.map(function(list) {
+                return list[listsIndex];
+            }));
+        };
+        return $shed.lists.createFromArray()(result);
+    };
+    
     return {
-        sequenceToList: sequenceToList
+        sequenceToList: sequenceToList,
+        zip: zip
     };
 });
