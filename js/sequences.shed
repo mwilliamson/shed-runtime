@@ -1,0 +1,37 @@
+import _sequences;
+import options;
+import trampolining;
+
+public val sequences = object {
+    public val Sequence = _sequences.Sequence;
+    public val nil = _sequences.nil;
+    public val isNil = _sequences.isNil;
+
+    public def head fun[T] => (sequence: Sequence[T]) => 
+        if isNil(sequence) then
+            options.none
+        else
+            options.some(sequence.head());
+
+    public def lazyCons fun[T] => (myHead: T, deferredTail: Function[Sequence[T]]) =>
+        object {
+            public def head fun() => myHead;
+            public val tail = deferredTail;
+        };
+    
+    public def forEach fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) =>
+        trampolining.trampoline(fun() => forEachTrampolined[T](func, sequence));
+        
+    def forEachTrampolined fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) =>
+        if isNil(sequence) then do {
+            return object {};
+        } else do {
+            func(sequence.head());
+            return trampolining.nextFunction(fun() => forEachTrampolined[T](func, sequence.tail()));
+        };
+    
+    public def singleton fun[T] => (value: T) => object {
+        public def head fun() => value;
+        public def tail fun() => nil;
+    };
+};
