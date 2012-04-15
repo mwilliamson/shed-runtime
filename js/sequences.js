@@ -54,6 +54,7 @@ $shed.exportModule("sequences", function() {
         
     return {
         Sequence: _sequences.Sequence,
+        isNil: _sequences.isNil,
         forEach: forEach,
         nil: nil,
         head: head,

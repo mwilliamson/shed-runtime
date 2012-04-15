@@ -1,0 +1,29 @@
+import sequences;
+
+public val lazySequences = object {
+    public def map fun[F, T] => (func: Function[F, T], sequence: Sequence[F]) =>
+        if sequences.isNil(sequence) then
+            sequences.nil
+        else
+            object {
+                public def head fun() => func(sequence.head());
+                public def tail fun() => map[F, T](func, sequence.tail());
+            }
+            
+    public def concat fun[T] => (sequenceOfSequences: Sequence[Sequence[T]]) =>
+        if sequences.isNil(sequenceOfSequences) then
+            sequences.nil
+        else do {
+            val headSequence = sequenceOfSequences.head();
+            return if sequences.isNil(headSequence) then
+                concat[T](sequenceOfSequences.tail())
+            else
+                object {
+                    public def head fun() => headSequence.head();
+                    public def tail fun() => concat[T](sequence.cons(
+                        headSequence.tail(),
+                        sequenceOfSequences.tail()
+                    ));
+                };
+        }
+};

@@ -282,3 +282,11 @@ function withTypeParameterInference(func) {
 function isShedType(shedObj) {
     return shedObj.$isShedType;
 };
+
+$shed.exportModule("_hacks", function() {
+    return {
+        isSame: function(first, second) {
+            return first === second;
+        }
+    };
+});
