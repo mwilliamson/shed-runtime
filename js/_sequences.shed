@@ -1,10 +1,16 @@
 public val _sequences = object {
-    public val nil = object {};
+    public def Nil class() => {}
+    public val nil = Nil();
+    
     public def cons fun[T] => (head: T, tail: Sequence[T]) =>
         Cons[T](head, tail);
-        
+    
     def Cons class[T] => (myHead: T, myTail: Sequence[T]) => {
         public def head fun() => myHead;
         public def tail fun() => myTail;
     };
+    
+    // TODO: should be Sequence = Nil | Cons
+    public def Sequence class[T] => () => {
+    }
 };

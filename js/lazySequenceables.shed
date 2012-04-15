@@ -1,0 +1,27 @@
+import lazySequences;
+import sequenceables.Sequenceable;
+import sequences.Sequence;
+
+public val lazySequenceables = object {
+    public def map fun[F, T] => (func: Function[F, T], sequenceable: Sequenceable[F]) => do {
+        val sequence = lazySequences.map[F, T](func, sequenceable.toSequence());
+        return sequenceToSequenceable[T](sequence);
+    };
+    
+    public def concat fun[T] => (sequenceableOfSequenceables: Sequenceable[Sequenceable[T]]) => do {
+        val sequenceOfSequences = toSequence[T](
+            map[Sequenceable[T], Sequence[T]](toSequence[T], sequenceableOfSequenceables));
+        val sequence = lazySequences.concat[T](sequenceOfSequences);
+        return sequenceToSequenceable[T](sequence);
+    };
+    
+    def sequenceToSequenceable fun[T] => (sequence: Sequence[T]) =>
+        SequenceableFromSequence[T](sequence);
+        
+    def SequenceableFromSequence class[T] => (sequence: Sequence[T]) => {
+        public def toSequence fun() => sequence;
+    };
+    
+    def toSequence fun[T] => (sequenceable: Sequenceable[T]) =>
+        sequenceable.toSequence();
+};

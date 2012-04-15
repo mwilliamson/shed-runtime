@@ -3,4 +3,6 @@ import sequences;
 public val sequenceables = object {
     public def head fun[T] => (sequenceable: Sequenceable[T]) =>
         sequences.head[T](sequenceable.toSequence());
+        
+    public def Sequenceable class[T] => () => {}
 };
