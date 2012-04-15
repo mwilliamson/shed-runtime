@@ -1,6 +1,7 @@
 $shed.exportModule("sequences", function() {    
     var _sequences = $shed.js.import("_sequences");
     var options = $shed.js.import("options");
+    var trampolining = $shed.js.import("trampolining");
     var nil = _sequences.nil;
     
     var head = function(T) {
@@ -27,12 +28,12 @@ $shed.exportModule("sequences", function() {
     var forEachTrampolined = function(T) {
         return function(func, sequence) {
             if (sequence === nil) {
-                return null;
+                return {};
             } else {
                 func(sequence.head());
-                return function() {
+                return trampolining.nextFunction(function() {
                     return forEachTrampolined(T)(func, sequence.tail());
-                };
+                });
             }
         };
     };
@@ -41,9 +42,7 @@ $shed.exportModule("sequences", function() {
             var next = function() {
                 return forEachTrampolined(T)(func, sequence);
             };
-            while (next !== null) {
-                next = next();
-            }
+            trampolining.trampoline(next);
         };
     };
     var singleton = function(T) {
