@@ -11,7 +11,7 @@ public val sequences = object {
         if isNil(sequence) then
             options.none
         else
-            options.some(sequence.head());
+            options.some[T](sequence.head());
 
     public def lazyCons fun[T] => (myHead: T, deferredTail: Function[Sequence[T]]) =>
         object {
