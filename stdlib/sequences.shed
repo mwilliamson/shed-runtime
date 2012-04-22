@@ -13,6 +13,17 @@ public val sequences = object {
         else
             options.some[T](sequence.head());
 
+    public def any fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
+        trampolining.trampoline(fun() => anyTrampolined[T](predicate, sequence));
+        
+    public def anyTrampolined fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
+        if isNil(sequence) then
+            trampolining.stop(false)
+        else if predicate(sequence.head()) then
+            trampolining.stop(true)
+        else
+            trampolining.nextFunction(fun() => anyTrampolined[T](predicate, sequence.tail()));
+
     public def lazyCons fun[T] => (myHead: T, deferredTail: Function[Sequence[T]]) =>
         object {
             public def head fun() => myHead;
@@ -24,7 +35,7 @@ public val sequences = object {
         
     def forEachTrampolined fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) =>
         if isNil(sequence) then do {
-            return object {};
+            return trampolining.stop(());
         } else do {
             func(sequence.head());
             return trampolining.nextFunction(fun() => forEachTrampolined[T](func, sequence.tail()));

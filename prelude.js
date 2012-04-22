@@ -300,7 +300,7 @@ $shed.exportModule("trampolining", function() {
             next = next.func();
         }
         
-        return next;
+        return next.value;
     };
     
     var nextFunction = function(func) {
@@ -310,8 +310,15 @@ $shed.exportModule("trampolining", function() {
         };
     };
     
+    var stop = function(value) {
+        return {
+            value: value
+        };
+    };
+    
     return {
         trampoline: trampoline,
-        nextFunction: nextFunction
+        nextFunction: nextFunction,
+        stop: stop
     };
 });
