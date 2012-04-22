@@ -1,0 +1,11 @@
+import sequenceables;
+
+public val sets = object {
+    // TODO: this is horribly inefficient. Write a proper HashSet class
+    public def fromList fun[T] => (list: List[T]) => ListSet[T](list);
+    
+    def ListSet class[T] => (list: List[T]) => {
+        public def contains fun(value: T) =>
+            sequenceables.any[T](fun(element: T) => value.equals(element), list);
+    };
+};
