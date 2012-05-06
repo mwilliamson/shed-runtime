@@ -44,8 +44,12 @@ var dummyType = {
             length: function(other) {
                 return number(value.length);
             },
+            // TODO: rename to sliceFrom
             slice: function(index) {
                 return string(value.slice(index.$value));
+            },
+            substring: function(startIndex, endIndex) {
+                return string(value.substring(startIndex.$value, endIndex.$value));
             },
             toString: function() {
                 return self;
