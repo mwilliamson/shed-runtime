@@ -1,0 +1,6 @@
+import _strings;
+
+public val strings = object {
+    // : Fun(String, Sequenceable[String]) => String
+    public val join = _strings.join;
+};
