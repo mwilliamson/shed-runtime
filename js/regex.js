@@ -27,6 +27,9 @@ $shed.exportModule("regex", function() {
                     };
                 }
             };
+        },
+        escape: function(shedString) {
+            return $shed.string(shedString.$value.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"));
         }
     };
 });
