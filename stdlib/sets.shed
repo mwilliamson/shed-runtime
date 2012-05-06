@@ -7,5 +7,7 @@ public val sets = object {
     def ListSet class[T] => (list: List[T]) => {
         public def contains fun(value: T) =>
             sequenceables.any[T](fun(element: T) => value.equals(element), list);
+            
+        public def toSequence fun() => list.toSequence();
     };
 };
