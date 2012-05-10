@@ -226,12 +226,6 @@ var Func = function() {
 var List = function() {
     return dummyType;
 };
-var join = function(shedJoiner, shedSequence) {
-    var jsStrings = shedSequence.map(function(shedString) {
-        return shedString.$value;
-    }).$toJsArray();
-    return $shed.string(jsStrings.join(shedJoiner.$value));
-};
 
 var tuple = function(values) {
     return values;
