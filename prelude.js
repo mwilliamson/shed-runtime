@@ -2,8 +2,64 @@ var dummyType = {
     $isShedType: true
 };
 
+var matchClass = function(clazz, func) {
+    return {
+        matches: function(value) {
+            return $shed.boolean(classOf(value).equals(clazz));
+        },
+        apply: func
+    };
+};
+
+var matchDefault = function(func) {
+    return {
+        matches: function(value) {
+            return $shed.boolean(true);
+        },
+        apply: func
+    };
+};
+
+var match = function(value) {
+    var cases = Array.prototype.slice.call(arguments, 1);
+    for (var i = 0; i < cases.length; i += 1) {
+        if (cases[i].matches(value)) {
+            return cases[i].apply(value);
+        }
+    }
+};
+
 (function() {
     $shed.unit = {};
+    
+    $shed.function = function(func) {
+        func.$define = function(name) {
+            return func;
+        };
+        return func;
+    };
+    
+    $shed.class = function(constructor, name) {
+        var clazz = function() {
+            var self = constructor.apply(this, arguments);
+            self.$class = clazz;
+            return self;
+        };
+        clazz.$define = function(name) {
+            return $shed.class(constructor, name);
+        };
+        clazz.equals = function(other) {
+            //~ console.log("clazz: " + clazz.toRepresentation().$value);
+            //~ console.log("other: " + other.toRepresentation().$value);
+            return clazz === other;
+        };
+        var representation = name ? "Class<" + name + ">" : "Class<$Anonymous>";
+        clazz.toRepresentation = function() {
+            return $shed.string(representation);
+        };
+        clazz.$isShedType = true;
+        return clazz;
+    };
     
     var number = $shed.number = function(value) {
         return {
@@ -124,6 +180,10 @@ var dummyType = {
         }
     };
 })();
+
+var classOf = function(value) {
+    return value.$class;
+};
 
 var $import = $shed.import;
 var $lists = $shed.lists;
