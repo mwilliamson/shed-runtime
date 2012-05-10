@@ -237,18 +237,6 @@ var pack = function(func) {
     };
 };
 
-var any = function(list) {
-    return list.$toJsArray().some(function(value) {
-        return value;
-    });
-};
-
-var all = function(list) {
-    return list.$toJsArray().every(function(value) {
-        return value;
-    });
-};
-
 var range = function(from, to) {
     var result = [];
     for (var i = from.$value; i < to.$value; i += 1) {
