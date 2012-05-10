@@ -1,0 +1,6 @@
+import _json;
+
+public val json = object {
+    // TODO: should return an option or similar to handle invalid inputs
+    public def parseString fun(value: String) => _json.parseString(value);
+};
