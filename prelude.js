@@ -61,7 +61,7 @@ var match = function(value) {
         return clazz;
     };
     
-    var number = $shed.number = function(value) {
+    var number = $shed.number = $shed.class(function(value) {
         return {
             $value: value,
             equals: function(other) {
@@ -80,9 +80,9 @@ var match = function(value) {
                 return string(value.toString());
             }
         };
-    };
+    }, "Double");
     
-    var string = $shed.string = function(value) {
+    var string = $shed.string = $shed.class(function(value) {
         var self = {
             $value: value,
             concat: function(other) {
@@ -108,7 +108,7 @@ var match = function(value) {
             }
         };
         return self;
-    };
+    }, "String");
     
     var boolean = $shed.boolean = function(value) {
         return value;
