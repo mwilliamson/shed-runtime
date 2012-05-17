@@ -30,8 +30,6 @@ var match = function(value) {
 };
 
 (function() {
-    $shed.unit = {};
-    
     $shed.function = function(func) {
         func.$define = function(name) {
             return func;
@@ -60,6 +58,9 @@ var match = function(value) {
         clazz.$isShedType = true;
         return clazz;
     };
+    
+    $shed.Unit = $shed.class(function() { }, "Unit");
+    $shed.unit = {};
     
     var number = $shed.number = $shed.class(function(value) {
         return {
@@ -195,6 +196,7 @@ var print = function(string) {
 var runtimeImport = $import;
 var listOf = withTypeParameterInference($shed.lists.create);
 var String = $shed.string;
+var Unit = $shed.Unit;
 var not = function(value) {
     return !value;
 };
@@ -210,7 +212,7 @@ var representation = function(value) {
     if (value.toRepresentation) {
         return value.toRepresentation();
     } else {
-        return $shed.string("<object without toRepresentation>");
+        return $shed.string("<" + representation(classOf(value)).$value + " without toRepresentation>");
     }
 };
 
