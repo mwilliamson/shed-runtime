@@ -9,7 +9,18 @@ public val lazySequences = object {
                 public def head fun() => func(sequence.head());
                 public def tail fun() => map[F, T](func, sequence.tail());
             }
-            
+    
+    public def filter fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
+        if sequences.isNil(sequence) then
+            sequences.nil
+        else if predicate(sequence.head()) then
+            object {
+                public def head fun() => sequence.head();
+                public def tail fun() => filter[T](predicate, sequence.tail());
+            }
+        else
+            filter[T](predicate, sequence.tail())
+    
     public def concat fun[T] => (sequenceOfSequences: Sequence[Sequence[T]]) =>
         if sequences.isNil(sequenceOfSequences) then
             sequences.nil
