@@ -204,6 +204,8 @@ var and = function() {
     });
 };
 
+// TODO: should detect whether or not an object has an appropriate
+// representation more safely
 var representation = function(value) {
     if (value.toRepresentation) {
         return value.toRepresentation();
