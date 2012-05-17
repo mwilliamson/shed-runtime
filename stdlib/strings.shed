@@ -2,5 +2,8 @@ import _strings;
 
 public val strings = object {
     // : Fun(String, Sequenceable[String]) => String
-    public val join = _strings.join;
+    public def join fun(separator: String, sequenceable: Sequenceable[String]) =>
+        joinSequence(separator, sequenceable.toSequence());
+    
+    public val joinSequence = _strings.joinSequence;
 };
