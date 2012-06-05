@@ -1,0 +1,26 @@
+import sequenceables;
+
+public val values = object {
+    members {
+        asValue AsValue,
+        attribute Attribute
+    }
+    // TODO: Should assert that type is T
+    def AsValue class[T] => (value: T, type: Type, attributes: List[Attribute]) => {
+        members {
+            equals
+        }
+        
+        def equals fun(other: T) => sequenceables.all[Attribute](
+            fun(attribute: Attribute) => attribute.get(value).equals(attribute.get(other)),
+            attributes
+        );
+    }
+    
+    def Attribute class[T, U] => (name: String, get: Function[T, U]) => {
+        members {
+            name fun() => name,
+            get fun(value: T) => get(value)
+        }
+    }
+};

@@ -7,5 +7,8 @@ public val sequenceables = object {
     public def any fun[T] => (predicate: Function[T, Boolean], sequenceable: Sequenceable[T]) =>
         sequences.any[T](predicate, sequenceable.toSequence());
     
+    public def all fun[T] => (predicate: Function[T, Boolean], sequenceable: Sequenceable[T]) =>
+        sequences.all[T](predicate, sequenceable.toSequence());
+    
     public def Sequenceable class[T] => () => {}
 };
