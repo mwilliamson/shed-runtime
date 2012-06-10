@@ -6,6 +6,7 @@ public val sequences = object {
     public val Sequence = _sequences.Sequence;
     public val nil = _sequences.nil;
     public val isNil = _sequences.isNil;
+    public val cons = _sequences.cons;
 
     public def head fun[T] => (sequence: Sequence[T]) => 
         if isNil(sequence) then
@@ -56,4 +57,13 @@ public val sequences = object {
         public def head fun() => value;
         public def tail fun() => nil;
     };
+    
+    public def reversed fun[T] => (sequence: Sequence[T]) : Sequence[T] =>
+        reversed2[T](nil, sequence);
+    
+    def reversed2 fun[T] => (alreadyReversed: Sequence[T], toReverse: Sequence[T]) =>
+        if isNil(toReverse) then
+            alreadyReversed
+        else
+            reversed2[T](cons[T](toReverse.head(), alreadyReversed), toReverse.tail())
 };
