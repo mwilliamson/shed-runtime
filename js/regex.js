@@ -23,7 +23,7 @@ $shed.exportModule("regex", function() {
                     if (result === null) {
                         return options.none;
                     } else {
-                        return options.some(RegexResult)(RegexResult(result));
+                        return options.some(RegexResult(result));
                     };
                 }
             };

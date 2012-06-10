@@ -60,7 +60,9 @@ var match = function(value) {
     };
     
     $shed.Unit = $shed.class(function() { }, "Unit");
-    $shed.unit = {};
+    $shed.unit = {$class: $shed.Unit};
+    
+    $shed.Function = $shed.class(function() { }, "Function");
     
     var number = $shed.number = $shed.class(function(value) {
         return {
@@ -148,13 +150,12 @@ var match = function(value) {
             toSequence: function() {
                 // HACK: should really define ImmutableArrayList later to avoid this late import
                 var sequences = $shed.js.import("sequences");
-                var T = null; // TODO: ImmutableArrayList should really be type parameterised
                 
                 var sequence = function(index) {
                     if (values.length === index) {
                         return sequences.nil;
                     } else {
-                        return sequences.lazyCons(T)(
+                        return sequences.lazyCons(
                             values[index],
                             function() {
                                 return sequence(index + 1);
@@ -169,21 +170,29 @@ var match = function(value) {
     };
     
     $shed.lists = {
-        create: function(T) {
-            return function() {
-                return ImmutableArrayList(Array.prototype.slice.call(arguments, 0));
-            };
+        create: function() {
+            return ImmutableArrayList(Array.prototype.slice.call(arguments, 0));
         },
-        createFromArray: function(T) {
-            return function(array) {
-                return ImmutableArrayList(array);
-            };
+        createFromArray: function(array) {
+            return ImmutableArrayList(array);
         }
     };
 })();
 
 var classOf = function(value) {
-    return value.$class;
+    if (value.$class) {
+        return value.$class;
+    } else if (isFunction(value)) {
+        return $shed.Function;
+    } else {
+        throw new Error("Could not determine class of value: " + (value.toString().$value || value.toString()));
+    }
+    
+    function isFunction(functionToCheck) {
+        var getType = {};
+        return functionToCheck && getType.toString.call(functionToCheck) === "[object Function]";
+    }
+
 };
 
 var $import = $shed.import;
@@ -194,7 +203,7 @@ var print = function(string) {
 };
 
 var runtimeImport = $import;
-var listOf = withTypeParameterInference($shed.lists.create);
+var listOf = $shed.lists.create;
 var String = $shed.string;
 var Unit = $shed.Unit;
 var not = function(value) {
@@ -217,7 +226,7 @@ var representation = function(value) {
 };
 
 var Nothing = dummyType;
-var emptyList = listOf(Nothing)();
+var emptyList = listOf();
 var Func = function() {
     return dummyType;
 };
@@ -240,27 +249,8 @@ var range = function(from, to) {
     for (var i = from.$value; i < to.$value; i += 1) {
         result.push($shed.number(i));
     }
-    return $shed.lists.createFromArray($shed.number)(result);
+    return $shed.lists.createFromArray(result);
 };
-
-// Yes! It's a hack! To get around the fact that the Shed compiler does not
-// currently implement type inference, and therefore cannot infer type parameters,
-// we infer them at runtime. Note this will fail miserably when attempting
-// to infer type parameters when the arguments of a function are types
-// (but I imagine that this is sufficiently rare that it shouldn't bite us.
-// Hopefully).
-// More critically, it means that the type parameters will all be undefined
-// within the function. Use with caution.
-function withTypeParameterInference(func) {
-    return function() {
-        var containsShedType = Array.prototype.some.call(arguments, isShedType);
-        if (containsShedType) {
-            return func.apply(this, arguments);
-        } else {
-            return func().apply(this, arguments);
-        }
-    };
-}
 
 function isShedType(shedObj) {
     return shedObj.$isShedType;

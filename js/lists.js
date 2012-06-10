@@ -1,14 +1,12 @@
 $shed.exportModule("lists", function() {
     var options = $shed.js.import("options");
     var sequences = $shed.js.import("sequences");
-    var sequenceToList = function(T) {
-        return function(sequence) {
-            var result = [];
-            sequences.forEach(T)(function(value) {
-                result.push(value);
-            }, sequence);
-            return $shed.lists.createFromArray(T)(result);
-        };
+    var sequenceToList = function(sequence) {
+        var result = [];
+        sequences.forEach(function(value) {
+            result.push(value);
+        }, sequence);
+        return $shed.lists.createFromArray(result);
     };
 
     // Assumes all inputs are the same length
@@ -22,7 +20,7 @@ $shed.exportModule("lists", function() {
                 return list[listsIndex];
             }));
         };
-        return $shed.lists.createFromArray()(result);
+        return $shed.lists.createFromArray(result);
     };
     
     return {
