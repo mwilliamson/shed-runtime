@@ -259,6 +259,11 @@ var Tuple = $shed.class(function() {
             return $shed.string(
                 "tuple(".concat(valuesString).concat(")")
             );
+        },
+        append: function(value) {
+            var newValues = values.slice(0);
+            newValues.push(value);
+            return tuple.apply(this, newValues);
         }
     };
 }, "Tuple");
