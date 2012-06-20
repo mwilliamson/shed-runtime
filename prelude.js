@@ -234,8 +234,44 @@ var List = function() {
     return dummyType;
 };
 
-var tuple = function(values) {
-    return values;
+var Tuple = $shed.class(function() {
+    var values = Array.prototype.slice.call(arguments, 0);
+    return {
+        $values: values,
+        equals: function(other) {
+            if (classOf(other) !== Tuple) {
+                return false;
+            }
+            if (values.length !== other.$values.length) {
+                return false;
+            }
+            for (var i = 0; i < values.length; i += 1) {
+                if (!values[i].equals(other.$values[i])) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        toRepresentation: function() {
+            var valuesString = values.map(function(value) {
+                return representation(value).$value;
+            }).join(", ");
+            return $shed.string(
+                "tuple(".concat(valuesString).concat(")")
+            );
+        }
+    };
+}, "Tuple");
+
+var tuple = Tuple;
+
+var tupleFromSequence = function(sequence) {
+    var values = [];
+    while (sequence.head) {
+        values.push(sequence.head());
+        sequence = sequence.tail();
+    }
+    return tuple.apply(null, values);
 };
 
 var pack = function(func) {
