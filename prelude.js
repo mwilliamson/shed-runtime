@@ -50,7 +50,7 @@ var match = function(value) {
             return clazz === other;
         };
         var representation = name ? "Class<" + name + ">" : "Class<$Anonymous>";
-        clazz.toRepresentation = function() {
+        clazz.represent = function() {
             return $shed.string(representation);
         };
         clazz.$isShedType = true;
@@ -104,7 +104,7 @@ var match = function(value) {
             toString: function() {
                 return self;
             },
-            toRepresentation: function() {
+            represent: function() {
                 return string(JSON.stringify(value));
             }
         };
@@ -215,11 +215,11 @@ var and = function() {
 
 // TODO: should detect whether or not an object has an appropriate
 // representation more safely
-var representation = function(value) {
-    if (value.toRepresentation) {
-        return value.toRepresentation();
+var represent = function(value) {
+    if (value.represent) {
+        return value.represent();
     } else {
-        return $shed.string("<" + representation(classOf(value)).$value + " without toRepresentation>");
+        return $shed.string("<" + represent(classOf(value)).$value + " without represent>");
     }
 };
 
@@ -250,9 +250,9 @@ var Tuple = $shed.class(function() {
             }
             return true;
         },
-        toRepresentation: function() {
+        represent: function() {
             var valuesString = values.map(function(value) {
-                return representation(value).$value;
+                return represent(value).$value;
             }).join(", ");
             return $shed.string(
                 "tuple(".concat(valuesString).concat(")")
