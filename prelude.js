@@ -47,8 +47,6 @@ var match = function(value) {
             return $shed.class(constructor, name);
         };
         clazz.equals = function(other) {
-            //~ console.log("clazz: " + clazz.toRepresentation().$value);
-            //~ console.log("other: " + other.toRepresentation().$value);
             return clazz === other;
         };
         var representation = name ? "Class<" + name + ">" : "Class<$Anonymous>";
