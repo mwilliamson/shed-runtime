@@ -1,6 +1,8 @@
 $shed.exportModule("lists", function() {
     var options = $shed.js.import("options");
     var sequences = $shed.js.import("sequences");
+    var tuples = $shed.js.import("tuples");
+    
     var sequenceToList = function(sequence) {
         var result = [];
         sequences.forEach(function(value) {
@@ -16,7 +18,7 @@ $shed.exportModule("lists", function() {
         });
         var result = [];
         for (var listsIndex = 0; listsIndex < lists[0].length; listsIndex += 1) {
-            result[listsIndex] = tuple(lists.map(function(list) {
+            result[listsIndex] = tuples.$createFromArray(lists.map(function(list) {
                 return list[listsIndex];
             }));
         };

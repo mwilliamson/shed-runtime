@@ -279,7 +279,7 @@ var tupleFromSequence = function(sequence) {
 
 var pack = function(func) {
     return function(tuple) {
-        return func.apply(this, tuple);
+        return func.apply(this, tuple.$values);
     };
 };
 
