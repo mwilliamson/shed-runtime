@@ -23,10 +23,10 @@ public val structs = object {
                 .concat(")")
         
         def equals fun(other: Struct) =>
-            and(
-                equal(type, other.type()),
+            if equal(type, other.type()) then
                 equalList(fields, other.fields())
-            )
+            else
+                false
             
         def equalList fun(first: List[Struct], second: List[Struct]) =>
             if not(equal(first.length(), second.length())) then
