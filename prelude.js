@@ -49,9 +49,12 @@ var match = function(value) {
         clazz.equals = function(other) {
             return clazz === other;
         };
-        var representation = name ? "Class<" + name + ">" : "Class<$Anonymous>";
+        var jsName = name ? name : "$Anonymous";
         clazz.represent = function() {
-            return $shed.string(representation);
+            return $shed.string("Class<" + jsName + ">");
+        };
+        clazz.identifier = function() {
+            return $shed.string(jsName)
         };
         clazz.$isShedType = true;
         return clazz;
@@ -218,6 +221,8 @@ var and = function() {
 var represent = function(value) {
     if (value.represent) {
         return value.represent();
+    } else if (value.struct) {
+        return represent(value.struct());
     } else {
         return $shed.string("<" + represent(classOf(value)).$value + " without represent>");
     }
@@ -295,3 +300,12 @@ function isShedType(shedObj) {
     return shedObj.$isShedType;
 };
 
+var equal = function(first, second) {
+    if (first.equals) {
+        return first.equals(second);
+    } else if (first.struct && second.struct) {
+        return equal(first.struct(), second.struct());
+    } else {
+        throw new Error("arguments are not equalable");
+    }
+};
