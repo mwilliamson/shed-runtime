@@ -169,7 +169,24 @@ var match = function(value) {
                 return sequence(0);
             },
             represent: function() {
-                return $shed.string("ImmutableArrayList([" + values.map(represent).join(", ") + "])");
+                var toJsString = function(value) {
+                    return value.$value;
+                };
+                var elements = values.map(represent).map(toJsString).join(", ");
+                return $shed.string("ImmutableArrayList([" + elements + "])");
+            },
+            equals: function(other) {
+                var otherArray = other.$toJsArray();
+                if (values.length !== otherArray.length) {
+                    return false;
+                } else {
+                    for (var i = 0; i < values.length; i += 1) {
+                        if (!equal(values[i], otherArray[i])) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
             }
         };
     };
