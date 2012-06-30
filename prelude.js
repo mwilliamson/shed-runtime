@@ -167,6 +167,9 @@ var match = function(value) {
                 };
                 
                 return sequence(0);
+            },
+            represent: function() {
+                return $shed.string("ImmutableArrayList([" + values.map(represent).join(", ") + "])");
             }
         };
     };
