@@ -62,6 +62,7 @@ var match = function(value) {
     
     $shed.Unit = $shed.class(function() { }, "Unit");
     $shed.unit = {$class: $shed.Unit};
+    $shed.Boolean = {$class: $shed.class(function() { }, "Boolean")};
     
     $shed.Function = $shed.class(function() { }, "Function");
     
@@ -185,6 +186,8 @@ var classOf = function(value) {
         return value.$class;
     } else if (isFunction(value)) {
         return $shed.Function;
+    } else if ($isBoolean(value)) {
+        return $shed.Boolean;
     } else {
         throw new Error("Could not determine class of value: " + (value.toString().$value || value.toString()));
     }
@@ -223,6 +226,8 @@ var represent = function(value) {
         return value.represent();
     } else if (value.struct) {
         return represent(value.struct());
+    } else if ($isBoolean(value)) {
+        return $shed.string(value ? "true" : "false");
     } else {
         return $shed.string("<" + represent(classOf(value)).$value + " without represent>");
     }
@@ -305,7 +310,13 @@ var equal = function(first, second) {
         return first.equals(second);
     } else if (first.struct && second.struct) {
         return equal(first.struct(), second.struct());
+    } else if ($isBoolean(first) && $isBoolean(second)) {
+        return first === second;
     } else {
         throw new Error("arguments are not equalable");
     }
+};
+
+var $isBoolean = function(value) {
+    return value === true || value === false;
 };
