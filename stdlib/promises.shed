@@ -1,0 +1,3 @@
+import _promises;
+
+public val promises = _promises;
