@@ -12,11 +12,12 @@ $shed.exportModule("_promises", function() {
         
         var impl = unfulfilledImpl;
         
-        function fulfill(result) {
+        function fulfill() {
             // TODO: replace impl so that calls that come in after fulfillment
             // work
+            var results = arguments;
             waitingMaps.forEach(function(waitingMap) {
-                waitingMap(result);
+                waitingMap.apply(null, results);
             });
         }
         
