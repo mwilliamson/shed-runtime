@@ -20,8 +20,14 @@ $shed.exportModule("nodejs", function() {
     
     function createExecutionResult(err, stdout, stderr) {
         return {
+            isSuccess: function() {
+                return !err;
+            },
             stdout: function() {
                 return $shed.string(stdout);
+            },
+            exitCode: function() {
+                return $shed.number(err.code);
             }
         };
     }
