@@ -238,6 +238,11 @@ var and = function() {
         return !!value;
     });
 };
+var or = function() {
+    return Array.prototype.slice.call(arguments, 0).some(function(value) {
+        return !!value;
+    });
+};
 
 // TODO: should detect whether or not an object has an appropriate
 // representation more safely
