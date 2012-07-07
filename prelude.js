@@ -27,6 +27,7 @@ var match = function(value) {
             return cases[i].apply(value);
         }
     }
+    throw new Error("no case found for match, value was: " + represent(value).$value);
 };
 
 (function() {
