@@ -1,13 +1,17 @@
+module sets;
+
+members {
+    fromList
+}
+
 import sequenceables;
 
-public val sets = object {
-    // TODO: this is horribly inefficient. Write a proper HashSet class
-    public def fromList fun[T] => (list: List[T]) => ListSet[T](list);
-    
-    def ListSet class[T] => (list: List[T]) => {
-        public def contains fun(value: T) =>
-            sequenceables.any[T](fun(element: T) => value.equals(element), list);
-            
-        public def toSequence fun() => list.toSequence();
-    };
+// TODO: this is horribly inefficient. Write a proper HashSet class
+def fromList fun[T] => (list: List[T]) => ListSet[T](list);
+
+def ListSet class[T] => (list: List[T]) => {
+    public def contains fun(value: T) =>
+        sequenceables.any[T](fun(element: T) => value.equals(element), list);
+        
+    public def toSequence fun() => list.toSequence();
 };

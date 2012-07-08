@@ -1,5 +1,5 @@
 $shed.exportModule("time", function() {
-    var _promises = $shed.js.import("_promises");
+    var _promises = $shed.js.import("promises");
     return {
         sleep: function(seconds) {
             var promise = _promises.createPromise();

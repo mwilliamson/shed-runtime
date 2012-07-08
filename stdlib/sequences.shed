@@ -1,69 +1,83 @@
+module sequences;
+
+members {
+    Sequence,
+    nil,
+    isNil,
+    cons,
+    head,
+    any,
+    all,
+    lazyCons,
+    forEach,
+    singleton,
+    reversed
+}
+
 import _sequences;
 import options;
 import trampolining;
 
-public val sequences = object {
-    public val Sequence = _sequences.Sequence;
-    public val nil = _sequences.nil;
-    public val isNil = _sequences.isNil;
-    public val cons = _sequences.cons;
+val Sequence = _sequences.Sequence;
+val nil = _sequences.nil;
+val isNil = _sequences.isNil;
+val cons = _sequences.cons;
 
-    public def head fun[T] => (sequence: Sequence[T]) => 
-        if isNil(sequence) then
-            options.none
-        else
-            options.some[T](sequence.head());
+def head fun[T] => (sequence: Sequence[T]) => 
+    if isNil(sequence) then
+        options.none
+    else
+        options.some[T](sequence.head());
 
-    public def any fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
-        trampolining.trampoline(fun() => anyTrampolined[T](predicate, sequence));
-        
-    public def anyTrampolined fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
-        if isNil(sequence) then
-            trampolining.stop(false)
-        else if predicate(sequence.head()) then
-            trampolining.stop(true)
-        else
-            trampolining.nextFunction(fun() => anyTrampolined[T](predicate, sequence.tail()));
-
-    public def all fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
-        trampolining.trampoline(fun() => allTrampolined[T](predicate, sequence));
-        
-    public def allTrampolined fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
-        if isNil(sequence) then
-            trampolining.stop(true)
-        else if predicate(sequence.head()) then
-            trampolining.nextFunction(fun() => allTrampolined[T](predicate, sequence.tail()))
-        else
-            trampolining.stop(false);
-
-    public def lazyCons fun[T] => (myHead: T, deferredTail: Function[Sequence[T]]) =>
-        object {
-            public def head fun() => myHead;
-            public val tail = deferredTail;
-        };
+def any fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
+    trampolining.trampoline(fun() => anyTrampolined[T](predicate, sequence));
     
-    public def forEach fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) =>
-        trampolining.trampoline(fun() => forEachTrampolined[T](func, sequence));
-        
-    def forEachTrampolined fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) =>
-        if isNil(sequence) then do {
-            return trampolining.stop(());
-        } else do {
-            func(sequence.head());
-            return trampolining.nextFunction(fun() => forEachTrampolined[T](func, sequence.tail()));
-        };
+def anyTrampolined fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
+    if isNil(sequence) then
+        trampolining.stop(false)
+    else if predicate(sequence.head()) then
+        trampolining.stop(true)
+    else
+        trampolining.nextFunction(fun() => anyTrampolined[T](predicate, sequence.tail()));
+
+def all fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
+    trampolining.trampoline(fun() => allTrampolined[T](predicate, sequence));
     
-    public def singleton fun[T] => (value: T) => object {
-        public def head fun() => value;
-        public def tail fun() => nil;
+def allTrampolined fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
+    if isNil(sequence) then
+        trampolining.stop(true)
+    else if predicate(sequence.head()) then
+        trampolining.nextFunction(fun() => allTrampolined[T](predicate, sequence.tail()))
+    else
+        trampolining.stop(false);
+
+def lazyCons fun[T] => (myHead: T, deferredTail: Function[Sequence[T]]) =>
+    object {
+        public def head fun() => myHead;
+        public val tail = deferredTail;
     };
+
+def forEach fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) =>
+    trampolining.trampoline(fun() => forEachTrampolined[T](func, sequence));
     
-    public def reversed fun[T] => (sequence: Sequence[T]) : Sequence[T] =>
-        reversed2[T](nil, sequence);
-    
-    def reversed2 fun[T] => (alreadyReversed: Sequence[T], toReverse: Sequence[T]) =>
-        if isNil(toReverse) then
-            alreadyReversed
-        else
-            reversed2[T](cons[T](toReverse.head(), alreadyReversed), toReverse.tail())
+def forEachTrampolined fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) =>
+    if isNil(sequence) then do {
+        return trampolining.stop(());
+    } else do {
+        func(sequence.head());
+        return trampolining.nextFunction(fun() => forEachTrampolined[T](func, sequence.tail()));
+    };
+
+def singleton fun[T] => (value: T) => object {
+    public def head fun() => value;
+    public def tail fun() => nil;
 };
+
+def reversed fun[T] => (sequence: Sequence[T]) : Sequence[T] =>
+    reversed2[T](nil, sequence);
+
+def reversed2 fun[T] => (alreadyReversed: Sequence[T], toReverse: Sequence[T]) =>
+    if isNil(toReverse) then
+        alreadyReversed
+    else
+        reversed2[T](cons[T](toReverse.head(), alreadyReversed), toReverse.tail())

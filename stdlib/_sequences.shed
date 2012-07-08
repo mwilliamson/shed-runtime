@@ -1,22 +1,32 @@
+module _sequences;
+
+members {
+    Nil,
+    nil,
+    cons,
+    isNil,
+    Sequence
+}
+
 import _hacks;
 
-public val _sequences = object {
-    public def Nil class() => {}
-    public val nil = Nil();
-    
-    public def cons fun[T] => (head: T, tail: Sequence[T]) =>
-        Cons[T](head, tail);
-    
-    // TODO: rather than using isNil, should really do a pattern match on Sequence
-    public def isNil fun(sequence: Sequence[Any]) =>
-        _hacks.isSame(sequence, nil);
-    
-    def Cons class[T] => (myHead: T, myTail: Sequence[T]) => {
-        public def head fun() => myHead;
-        public def tail fun() => myTail;
-    };
-    
-    // TODO: should be Sequence = Nil | Cons, where Cons is an interface
-    public def Sequence class[T] => () => {
+def Nil class() => {}
+val nil = Nil();
+
+def cons fun[T] => (head: T, tail: Sequence[T]) =>
+    Cons[T](head, tail);
+
+// TODO: rather than using isNil, should really do a pattern match on Sequence
+def isNil fun(sequence: Sequence[Any]) =>
+    _hacks.isSame(sequence, nil);
+
+def Cons class[T] => (head: T, tail: Sequence[T]) => {
+    members {
+        head fun() => head,
+        tail fun() => tail
     }
 };
+
+// TODO: should be Sequence = Nil | Cons, where Cons is an interface
+def Sequence class[T] => () => {
+}

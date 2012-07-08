@@ -1,7 +1,12 @@
+module _json;
+
+members {
+    parseString,
+    stringifyString
+}
+
 import _json;
 
-public val json = object {
-    // TODO: should return an option or similar to handle invalid inputs
-    public def parseString fun(value: String) => _json.parseString(value);
-    public def stringifyString fun(value: String) => _json.stringifyString(value);
-};
+// TODO: should return an option or similar to handle invalid inputs
+def parseString fun(value: String) => _json.parseString(value);
+def stringifyString fun(value: String) => _json.stringifyString(value);

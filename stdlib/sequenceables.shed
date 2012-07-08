@@ -1,14 +1,21 @@
+module sequenceables;
+
+members {
+    head,
+    any,
+    all,
+    Sequenceable
+}
+
 import sequences;
 
-public val sequenceables = object {
-    public def head fun[T] => (sequenceable: Sequenceable[T]) =>
-        sequences.head[T](sequenceable.toSequence());
-    
-    public def any fun[T] => (predicate: Function[T, Boolean], sequenceable: Sequenceable[T]) =>
-        sequences.any[T](predicate, sequenceable.toSequence());
-    
-    public def all fun[T] => (predicate: Function[T, Boolean], sequenceable: Sequenceable[T]) =>
-        sequences.all[T](predicate, sequenceable.toSequence());
-    
-    public def Sequenceable class[T] => () => {}
-};
+def head fun[T] => (sequenceable: Sequenceable[T]) =>
+    sequences.head[T](sequenceable.toSequence());
+
+def any fun[T] => (predicate: Function[T, Boolean], sequenceable: Sequenceable[T]) =>
+    sequences.any[T](predicate, sequenceable.toSequence());
+
+def all fun[T] => (predicate: Function[T, Boolean], sequenceable: Sequenceable[T]) =>
+    sequences.all[T](predicate, sequenceable.toSequence());
+
+def Sequenceable class[T] => () => {}

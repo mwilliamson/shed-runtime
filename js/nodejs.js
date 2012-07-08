@@ -1,7 +1,7 @@
 $shed.exportModule("nodejs", function() {
     var util = require("util");
     var child_process = require("child_process");
-    var _promises = $shed.js.import("_promises");
+    var _promises = $shed.js.import("promises");
     
     var command = util.format("node");
     

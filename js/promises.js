@@ -1,4 +1,4 @@
-$shed.exportModule("_promises", function() {
+$shed.exportModule("promises", function() {
     function constructPromise() {
         var waitingMaps = [];
         
