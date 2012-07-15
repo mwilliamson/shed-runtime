@@ -1,4 +1,4 @@
-module _json;
+module json;
 
 members {
     parseString,
