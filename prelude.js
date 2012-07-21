@@ -1,5 +1,4 @@
 var dummyType = {
-    $isShedType: true
 };
 
 var matchClass = function(clazz, func) {
@@ -57,7 +56,6 @@ var match = function(value) {
         clazz.identifier = function() {
             return $shed.string(jsName)
         };
-        clazz.$isShedType = true;
         return clazz;
     };
     
@@ -331,10 +329,6 @@ var range = function(from, to) {
         result.push($shed.number(i));
     }
     return $shed.lists.createFromArray(result);
-};
-
-function isShedType(shedObj) {
-    return shedObj.$isShedType;
 };
 
 var equal = function(first, second) {

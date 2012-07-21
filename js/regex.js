@@ -4,17 +4,14 @@ $shed.exportModule("regex", function() {
         create: function(shedRegexString) {
             var RegexResult = function(jsResult) {
                 return {
-                    $isShedType: true,
                     capture: function(index) {
                         return $shed.string(jsResult[index.$value]);
                     }
                 };
             };
-            RegexResult.$isShedType = true;
             
             var regex = new RegExp(shedRegexString.$value);
             return {
-                $isShedType: $shed.boolean(true),
                 test: function(shedString) {
                     return $shed.boolean(regex.test(shedString.$value));
                 },
