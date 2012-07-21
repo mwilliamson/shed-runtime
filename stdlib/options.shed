@@ -12,7 +12,8 @@ val none = object {
         map,
         orElse,
         valueOrElse,
-        toSequence
+        toSequence,
+        equals
     }
     
     def map fun[R] => (func: Function[Nothing, R]) =>
@@ -26,6 +27,9 @@ val none = object {
         
     def toSequence fun() =>
         _sequences.nil;
+        
+    def equals fun(other: Option[Any]) =>
+        other.map(fun() => false).orElse(fun() => true)
 };
 
 def some class[T] => (value: T) => {
@@ -45,4 +49,8 @@ def some class[T] => (value: T) => {
         
     public def toSequence fun() =>
         _sequences.cons[T](value, _sequences.nil);
+        
+    public def equals fun(other: Option[T]) =>
+        other.map(fun(otherValue: T) => equal(value, otherValue))
+            .orElse(fun() => false)
 };
