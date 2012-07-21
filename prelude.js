@@ -73,6 +73,12 @@ var match = function(value) {
             equals: function(other) {
                 return boolean(value === other.$value);
             },
+            lessThan: function(other) {
+                return boolean(value < other.$value);
+            },
+            lessThanOrEqual: function(other) {
+                return boolean(value <= other.$value);
+            },
             greaterThan: function(other) {
                 return boolean(value > other.$value);
             },
