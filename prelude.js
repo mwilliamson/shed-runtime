@@ -145,6 +145,9 @@ var match = function(value) {
             head: function() {
                 return values[0];
             },
+            last: function() {
+                return values[values.length - 1];
+            },
             append: function(value) {
                 return ImmutableArrayList(values.concat([value]));
             },
@@ -284,7 +287,7 @@ var Tuple = $shed.class(function() {
                 return false;
             }
             for (var i = 0; i < values.length; i += 1) {
-                if (!values[i].equals(other.$values[i])) {
+                if (!equal(values[i], other.$values[i])) {
                     return false;
                 }
             }
@@ -302,6 +305,9 @@ var Tuple = $shed.class(function() {
             var newValues = values.slice(0);
             newValues.push(value);
             return tuple.apply(this, newValues);
+        },
+        map: function(func) {
+            return func.apply(null, values);
         }
     };
 }, "Tuple");
