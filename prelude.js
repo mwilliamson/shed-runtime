@@ -352,3 +352,13 @@ var equal = function(first, second) {
 var $isBoolean = function(value) {
     return value === true || value === false;
 };
+
+var lazyFunction = function(func) {
+    var impl = function() {
+        impl = func();
+        return impl.apply(this, arguments);
+    };
+    return function() {
+        return impl.apply(this, arguments);
+    };
+};
