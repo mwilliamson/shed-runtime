@@ -30,10 +30,11 @@ var match = function(value) {
 };
 
 (function() {
+    Function.prototype.$define = function(name) {
+        return this;
+    };
+    
     $shed.function = function(func) {
-        func.$define = function(name) {
-            return func;
-        };
         return func;
     };
     
