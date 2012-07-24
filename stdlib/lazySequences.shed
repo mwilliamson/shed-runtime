@@ -12,21 +12,29 @@ def map fun[F, T] => (func: Function[F, T], sequence: Sequence[F]) =>
     if sequences.isNil(sequence) then
         sequences.nil
     else
-        object {
-            public def head fun() => func(sequence.head());
-            public def tail fun() => map[F, T](func, sequence.tail());
-        }
+        MappedCons(func, sequence)
+
+def MappedCons class[F, T] => (func: Function[F, T], sequence: Cons[T]) => {
+    members {
+        head fun() => func(sequence.head()),
+        tail fun() => map[F, T](func, sequence.tail())
+    }
+}
 
 def filter fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
     if sequences.isNil(sequence) then
         sequences.nil
     else if predicate(sequence.head()) then
-        object {
-            public def head fun() => sequence.head();
-            public def tail fun() => filter[T](predicate, sequence.tail());
-        }
+        FilteredCons(predicate, sequence)
     else
         filter[T](predicate, sequence.tail())
+        
+def FilteredCons class[T] => (predicate: Function[T, Boolean], sequence: Cons[T]) => {
+    members {
+        head fun() => sequence.head(),
+        tail fun() => filter[T](predicate, sequence.tail())
+    }
+}
 
 def concat fun[T] => (sequenceOfSequences: Sequence[Sequence[T]]) =>
     if sequences.isNil(sequenceOfSequences) then
@@ -36,11 +44,15 @@ def concat fun[T] => (sequenceOfSequences: Sequence[Sequence[T]]) =>
         return if sequences.isNil(headSequence) then
             concat[T](sequenceOfSequences.tail())
         else
-            object {
-                public def head fun() => headSequence.head();
-                public def tail fun() => concat[T](sequence.cons(
-                    headSequence.tail(),
-                    sequenceOfSequences.tail()
-                ));
-            };
+            ConcatSequence(headSequence, sequenceOfSequences);
     }
+
+def ConcatSequence class[T] => (headSequence: Cons[T], sequenceOfSequences: Sequence[T]) => {
+    members {
+        head fun() => headSequence.head(),
+        tail fun() => concat[T](sequence.cons(
+            headSequence.tail(),
+            sequenceOfSequences.tail()
+        ))
+    }
+}

@@ -51,11 +51,12 @@ def allTrampolined fun[T] => (predicate: Function[T, Boolean], sequence: Sequenc
     else
         trampolining.stop(false);
 
-def lazyCons fun[T] => (myHead: T, deferredTail: Function[Sequence[T]]) =>
-    object {
-        public def head fun() => myHead;
-        public val tail = deferredTail;
-    };
+def lazyCons class[T] => (myHead: T, deferredTail: Function[Sequence[T]]) => {
+    members {
+        head fun() => myHead,
+        tail deferredTail
+    }
+}
 
 def forEach fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) =>
     trampolining.trampoline(fun() => forEachTrampolined[T](func, sequence));
@@ -68,10 +69,12 @@ def forEachTrampolined fun[T] => (func: Function[T, Unit], sequence: Sequence[T]
         return trampolining.nextFunction(fun() => forEachTrampolined[T](func, sequence.tail()));
     };
 
-def singleton fun[T] => (value: T) => object {
-    public def head fun() => value;
-    public def tail fun() => nil;
-};
+def singleton class[T] => (value: T) => {
+    members {
+        head fun() => value,
+        tail fun() => nil
+    }
+}
 
 def reversed fun[T] => (sequence: Sequence[T]) : Sequence[T] =>
     reversed2[T](nil, sequence);
