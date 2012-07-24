@@ -38,25 +38,46 @@ var match = function(value) {
         return func;
     };
     
+    var shedClassPrototype = {
+        equals: function(other) {
+            return this === other;
+        },
+        _jsName: function() {
+            return this.$name ? this.$name : "$Anonymous";
+        },
+        represent: function() {
+            return $shed.string("Class<" + this._jsName() + ">");
+        },
+        identifier: function() {
+            return $shed.string(this._jsName());
+        }
+    };
+    shedClassPrototype.__proto__ = Function.prototype;
+    
     $shed.class = function(constructor, name) {
         var clazz = function() {
             var self = constructor.apply(this, arguments);
             self.$class = clazz;
             return self;
         };
+        clazz.$constructor = constructor;
+        clazz.$name = name;
+        
+        clazz.__proto__ = shedClassPrototype;
+        
         clazz.$define = function(name) {
             return $shed.class(constructor, name);
         };
-        clazz.equals = function(other) {
-            return clazz === other;
-        };
-        var jsName = name ? name : "$Anonymous";
-        clazz.represent = function() {
-            return $shed.string("Class<" + jsName + ">");
-        };
-        clazz.identifier = function() {
-            return $shed.string(jsName)
-        };
+        //~ clazz.equals = function(other) {
+            //~ return clazz === other;
+        //~ };
+        //~ var jsName = name ? name : "$Anonymous";
+        //~ clazz.represent = function() {
+            //~ return $shed.string("Class<" + jsName + ">");
+        //~ };
+        //~ clazz.identifier = function() {
+            //~ return $shed.string(jsName)
+        //~ };
         return clazz;
     };
     
@@ -94,32 +115,62 @@ var match = function(value) {
     }, "Double");
     
     var string = $shed.string = $shed.class(function(value) {
-        var self = {
-            $value: value,
-            concat: function(other) {
-                return string(value + other.$value);
-            },
-            equals: function(other) {
-                return value === other.$value;
-            },
-            length: function(other) {
-                return number(value.length);
-            },
-            sliceFrom: function(index) {
-                return string(value.slice(index.$value));
-            },
-            substring: function(startIndex, endIndex) {
-                return string(value.substring(startIndex.$value, endIndex.$value));
-            },
-            toString: function() {
-                return self;
-            },
-            represent: function() {
-                return string(JSON.stringify(value));
-            }
-        };
-        return self;
+        return new String(value);
     }, "String");
+    
+    function String(value) {
+        this.$value = value;
+    }
+    
+    String.prototype.concat = function(other) {
+        return string(this.$value + other.$value);
+    };
+    String.prototype.equals = function(other) {
+        return this.$value === other.$value;
+    };
+    String.prototype.length = function(other) {
+        return number(this.$value.length);
+    };
+    String.prototype.sliceFrom = function(index) {
+        return string(this.$value.slice(index.$value));
+    };
+    String.prototype.substring = function(startIndex, endIndex) {
+        return string(this.$value.substring(startIndex.$value, endIndex.$value));
+    };
+    String.prototype.toString = function() {
+        return self;
+    };
+    String.prototype.represent = function() {
+        return string(JSON.stringify(this.$value));
+    };
+    
+    //~ var string = $shed.string = $shed.class(function(value) {
+        //~ var self = {
+            //~ $value: value,
+            //~ concat: function(other) {
+                //~ return string(value + other.$value);
+            //~ },
+            //~ equals: function(other) {
+                //~ return value === other.$value;
+            //~ },
+            //~ length: function(other) {
+                //~ return number(value.length);
+            //~ },
+            //~ sliceFrom: function(index) {
+                //~ return string(value.slice(index.$value));
+            //~ },
+            //~ substring: function(startIndex, endIndex) {
+                //~ return string(value.substring(startIndex.$value, endIndex.$value));
+            //~ },
+            //~ toString: function() {
+                //~ return self;
+            //~ },
+            //~ represent: function() {
+                //~ return string(JSON.stringify(value));
+            //~ }
+        //~ };
+        //~ return self;
+    //~ }, "String");
     
     var boolean = $shed.boolean = function(value) {
         return value;
