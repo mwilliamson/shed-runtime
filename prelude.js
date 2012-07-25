@@ -30,6 +30,19 @@ var match = function(value) {
 };
 
 (function() {
+    $shed.isJsFunction = function(functionToCheck) {
+        var getType = {};
+        return functionToCheck && getType.toString.call(functionToCheck) === "[object Function]";
+    }
+
+    $shed.memberAccess = function(obj, member) {
+        if ($shed.isJsFunction(member)) {
+            return member.bind(obj);
+        } else {
+            return member;
+        }
+    };
+    
     Function.prototype.$define = function(name) {
         return this;
     };
@@ -254,17 +267,12 @@ var match = function(value) {
 var classOf = function(value) {
     if (value.$class) {
         return value.$class;
-    } else if (isFunction(value)) {
+    } else if ($shed.isJsFunction(value)) {
         return $shed.Function;
     } else if ($isBoolean(value)) {
         return $shed.Boolean;
     } else {
         throw new Error("Could not determine class of value: " + (value.toString().$value || value.toString()));
-    }
-    
-    function isFunction(functionToCheck) {
-        var getType = {};
-        return functionToCheck && getType.toString.call(functionToCheck) === "[object Function]";
     }
 
 };
