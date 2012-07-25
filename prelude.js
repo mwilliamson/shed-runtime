@@ -36,10 +36,10 @@ var match = function(value) {
     }
 
     $shed.memberAccess = function(obj, member) {
-        if (member.$className || !$shed.isJsFunction(member)) {
-            return member;
-        } else {
+        if (obj.$usesThis && $shed.isJsFunction(member)) {
             return member.bind(obj);
+        } else {
+            return member;
         }
     };
     
@@ -52,6 +52,7 @@ var match = function(value) {
     };
     
     var shedClassPrototype = {
+        $usesThis: true,
         equals: function(other) {
             return this === other;
         },
@@ -118,6 +119,7 @@ var match = function(value) {
         this.$value = value;
     }
     
+    String.prototype.$usesThis = true;
     String.prototype.$class = $shed.string;
     
     String.prototype.concat = function(other) {
@@ -149,6 +151,9 @@ var match = function(value) {
     function ImmutableArrayList(values) {
         this.$values = values;
     }
+    
+    ImmutableArrayList.prototype.$usesThis = true;
+    ImmutableArrayList.prototype.$class = ImmutableArrayList;
     
     ImmutableArrayList.prototype.forEach = function(func) {
         return this.$values.forEach(func);
