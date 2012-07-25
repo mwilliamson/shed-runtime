@@ -30,6 +30,7 @@ $shed.exportModule("promises", function() {
         }
         
         return {
+            $class: Promise,
             map: function(func) {
                 return impl.map(func);
             },

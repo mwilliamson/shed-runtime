@@ -36,7 +36,7 @@ var match = function(value) {
     }
 
     $shed.memberAccess = function(obj, member) {
-        if (member.$constructor || !$shed.isJsFunction(member)) {
+        if (member.$className || !$shed.isJsFunction(member)) {
             return member;
         } else {
             return member.bind(obj);
@@ -56,7 +56,7 @@ var match = function(value) {
             return this === other;
         },
         _jsName: function() {
-            return this.$name ? this.$name : "$Anonymous";
+            return this.$className ? this.$className : "$Anonymous";
         },
         represent: function() {
             return $shed.string("Class<" + this._jsName() + ">");
@@ -65,23 +65,15 @@ var match = function(value) {
             return $shed.string(this._jsName());
         },
         $define: function(name) {
-            return $shed.class(this.$constructor, this.$name);
+            return $shed.class(this, name);
         }
     };
     shedClassPrototype.__proto__ = Function.prototype;
     
     $shed.class = function(constructor, name) {
-        var clazz = function() {
-            var self = constructor.apply(this, arguments);
-            self.$class = clazz;
-            return self;
-        };
-        clazz.$constructor = constructor;
-        clazz.$name = name;
-        
-        clazz.__proto__ = shedClassPrototype;
-        
-        return clazz;
+        constructor.$className = name;
+        constructor.__proto__ = shedClassPrototype;
+        return constructor;
     };
     
     $shed.Unit = $shed.class(function() { }, "Unit");
@@ -92,6 +84,7 @@ var match = function(value) {
     
     var number = $shed.number = $shed.class(function(value) {
         return {
+            $class: $shed.number,
             $value: value,
             equals: function(other) {
                 return boolean(value === other.$value);
@@ -124,6 +117,8 @@ var match = function(value) {
     function String(value) {
         this.$value = value;
     }
+    
+    String.prototype.$class = $shed.string;
     
     String.prototype.concat = function(other) {
         return string(this.$value + other.$value);
@@ -318,6 +313,7 @@ var List = function() {
 var Tuple = $shed.class(function() {
     var values = Array.prototype.slice.call(arguments, 0);
     return {
+        $class: Tuple,
         $values: values,
         equals: function(other) {
             if (classOf(other) !== Tuple) {
