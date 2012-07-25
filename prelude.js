@@ -403,3 +403,17 @@ var lazyFunction = function(func) {
         return impl.apply(this, arguments);
     };
 };
+
+var range = function(from, to) {
+    return {
+        foldLeft: function(initialValue, func) {
+            from = from.$value;
+            to = to.$value;
+            var result = initialValue;
+            for (var i = from; i < to; i++) {
+                result = func(result, i);
+            }
+            return result;
+        }
+    };
+};
