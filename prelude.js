@@ -147,34 +147,6 @@ var match = function(value) {
         return string(JSON.stringify(this.$value));
     };
     
-    //~ var string = $shed.string = $shed.class(function(value) {
-        //~ var self = {
-            //~ $value: value,
-            //~ concat: function(other) {
-                //~ return string(value + other.$value);
-            //~ },
-            //~ equals: function(other) {
-                //~ return value === other.$value;
-            //~ },
-            //~ length: function(other) {
-                //~ return number(value.length);
-            //~ },
-            //~ sliceFrom: function(index) {
-                //~ return string(value.slice(index.$value));
-            //~ },
-            //~ substring: function(startIndex, endIndex) {
-                //~ return string(value.substring(startIndex.$value, endIndex.$value));
-            //~ },
-            //~ toString: function() {
-                //~ return self;
-            //~ },
-            //~ represent: function() {
-                //~ return string(JSON.stringify(value));
-            //~ }
-        //~ };
-        //~ return self;
-    //~ }, "String");
-    
     var boolean = $shed.boolean = function(value) {
         return value;
     };
