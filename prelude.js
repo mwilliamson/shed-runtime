@@ -36,10 +36,10 @@ var match = function(value) {
     }
 
     $shed.memberAccess = function(obj, member) {
-        if ($shed.isJsFunction(member)) {
-            return member.bind(obj);
-        } else {
+        if (member.$constructor || !$shed.isJsFunction(member)) {
             return member;
+        } else {
+            return member.bind(obj);
         }
     };
     
@@ -63,6 +63,9 @@ var match = function(value) {
         },
         identifier: function() {
             return $shed.string(this._jsName());
+        },
+        $define: function(name) {
+            return $shed.class(this.$constructor, this.$name);
         }
     };
     shedClassPrototype.__proto__ = Function.prototype;
@@ -78,9 +81,6 @@ var match = function(value) {
         
         clazz.__proto__ = shedClassPrototype;
         
-        clazz.$define = function(name) {
-            return $shed.class(constructor, name);
-        };
         return clazz;
     };
     
@@ -151,87 +151,105 @@ var match = function(value) {
         return value;
     };
     
-    var ImmutableArrayList = function(values) {
-        return {
-            forEach: values.forEach.bind(values),
-            map: function(func) {
-                return ImmutableArrayList(values.map(func));
-            },
-            filter: function(predicate) {
-                return ImmutableArrayList(values.filter(predicate));
-            },
-            foldLeft: function(initialValue, func) {
-                return values.reduce(func, initialValue);
-            },
-            isEmpty: function() {
-                return values.length === 0;
-            },
-            length: function() {
-                return number(values.length);
-            },
-            head: function() {
-                return values[0];
-            },
-            last: function() {
-                return values[values.length - 1];
-            },
-            append: function(value) {
-                return ImmutableArrayList(values.concat([value]));
-            },
-            concat: function(other) {
-                return ImmutableArrayList(values.concat(other.$toJsArray()));
-            },
-            $toJsArray: function() {
-                return values;
-            },
-            toSequence: function() {
-                // HACK: should really define ImmutableArrayList later to avoid this late import
-                var sequences = $shed.js.import("sequences");
-                
-                var sequence = function(index) {
-                    if (values.length === index) {
-                        return sequences.nil;
-                    } else {
-                        return sequences.lazyCons(
-                            values[index],
-                            function() {
-                                return sequence(index + 1);
-                            }
-                        );
+    function ImmutableArrayList(values) {
+        this.$values = values;
+    }
+    
+    ImmutableArrayList.prototype.forEach = function(func) {
+        return this.$values.forEach(func);
+    };
+    
+    ImmutableArrayList.prototype.map = function(func) {
+        return new ImmutableArrayList(this.$values.map(func));
+    };
+    
+    ImmutableArrayList.prototype.filter = function(predicate) {
+        return new ImmutableArrayList(this.$values.filter(predicate));
+    };
+    
+    ImmutableArrayList.prototype.foldLeft = function(initialValue, func) {
+        return this.$values.reduce(func, initialValue);
+    };
+    
+    ImmutableArrayList.prototype.isEmpty = function() {
+        return this.$values.length === 0;
+    };
+    
+    ImmutableArrayList.prototype.length = function() {
+        return number(this.$values.length);
+    };
+    
+    ImmutableArrayList.prototype.head = function() {
+        // TODO: should return an option
+        return this.$values[0];
+    };
+    
+    ImmutableArrayList.prototype.last = function() {
+        // TODO: should return an option
+        return this.$values[this.$values.length - 1];
+    };
+    
+    ImmutableArrayList.prototype.append = function(value) {
+        return new ImmutableArrayList(this.$values.concat([value]));
+    };
+    
+    ImmutableArrayList.prototype.concat = function(other) {
+        return new ImmutableArrayList(this.$values.concat(other.$toJsArray()));
+    };
+    
+    ImmutableArrayList.prototype.$toJsArray = function() {
+        return this.$values;
+    };
+    
+    ImmutableArrayList.prototype.toSequence = function() {
+        // HACK: should really define ImmutableArrayList later to avoid this late import
+        var sequences = $shed.js.import("sequences");
+        var values = this.$values;
+        
+        var sequence = function(index) {
+            if (values.length === index) {
+                return sequences.nil;
+            } else {
+                return sequences.lazyCons(
+                    values[index],
+                    function() {
+                        return sequence(index + 1);
                     }
-                };
-                
-                return sequence(0);
-            },
-            represent: function() {
-                var toJsString = function(value) {
-                    return value.$value;
-                };
-                var elements = values.map(represent).map(toJsString).join(", ");
-                return $shed.string("ImmutableArrayList([" + elements + "])");
-            },
-            equals: function(other) {
-                var otherArray = other.$toJsArray();
-                if (values.length !== otherArray.length) {
-                    return false;
-                } else {
-                    for (var i = 0; i < values.length; i += 1) {
-                        if (!equal(values[i], otherArray[i])) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
+                );
             }
         };
+        
+        return sequence(0);
+    };
+    
+    ImmutableArrayList.prototype.represent = function() {
+        var toJsString = function(value) {
+            return value.$value;
+        };
+        var elements = this.$values.map(represent).map(toJsString).join(", ");
+        return $shed.string("ImmutableArrayList([" + elements + "])");
+    };
+    
+    ImmutableArrayList.prototype.equals = function(other) {
+        var otherArray = other.$toJsArray();
+        if (this.$values.length !== otherArray.length) {
+            return false;
+        } else {
+            for (var i = 0; i < this.$values.length; i += 1) {
+                if (!equal(this.$values[i], otherArray[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
     };
     
     $shed.lists = {
         create: function() {
-            return ImmutableArrayList(Array.prototype.slice.call(arguments, 0));
+            return new ImmutableArrayList(Array.prototype.slice.call(arguments, 0));
         },
         createFromArray: function(array) {
-            return ImmutableArrayList(array);
+            return new ImmutableArrayList(array);
         }
     };
 })();
