@@ -68,16 +68,6 @@ var match = function(value) {
         clazz.$define = function(name) {
             return $shed.class(constructor, name);
         };
-        //~ clazz.equals = function(other) {
-            //~ return clazz === other;
-        //~ };
-        //~ var jsName = name ? name : "$Anonymous";
-        //~ clazz.represent = function() {
-            //~ return $shed.string("Class<" + jsName + ">");
-        //~ };
-        //~ clazz.identifier = function() {
-            //~ return $shed.string(jsName)
-        //~ };
         return clazz;
     };
     
