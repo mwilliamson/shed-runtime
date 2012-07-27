@@ -370,7 +370,7 @@ var pack = function(func) {
     };
 };
 
-var range = function(from, to) {
+var listRange = function(from, to) {
     var result = [];
     for (var i = from.$value; i < to.$value; i += 1) {
         result.push($shed.number(i));
