@@ -38,7 +38,7 @@ $shed.modules = $shed.modules || {};
         
         var value = module.value;
         for (var depth = moduleResult.depth; depth < identifiers.length; depth += 1) {
-            if (!Object.prototype.hasOwnProperty.call(value, identifiers[depth])) {
+            if (!(identifiers[depth] in value)) {
                 throw new Error("Could not find module: " + name.$value);
             }
             value = value[identifiers[depth]];
