@@ -9,48 +9,47 @@ import _sequences;
 
 val none = object {
     members {
-        map,
-        orElse,
-        valueOrElse,
-        toSequence,
-        equals
+        map fun[R] => (func: Function[Nothing, R]) =>
+            none,
+            
+        orElse fun[T2] => (func: Function[Option[T2]]) =>
+            func(),
+            
+        valueOrElse fun[T2] => (func: Function[T2]) =>
+            func(),
+            
+        toSequence fun() =>
+            _sequences.nil,
+            
+        equals fun(other: Option[Any]) =>
+            other.map(fun() => false).valueOrElse(fun() => true)
     }
-    
-    def map fun[R] => (func: Function[Nothing, R]) =>
-        none;
-    
-    def orElse fun[T2] => (func: Function[Option[T2]]) =>
-        func();
-    
-    def valueOrElse fun[T2] => (func: Function[T2]) =>
-        func();
-        
-    def toSequence fun() =>
-        _sequences.nil;
-        
-    def equals fun(other: Option[Any]) =>
-        other.map(fun() => false).orElse(fun() => true)
 };
 
 def some class[T] => (value: T) => {
-    public def map fun[R] => (func: Function[T, R]) =>
-        some[T](func(value));
-    
-    // TODO: need this i.e. need to implement methods to avoid
-    // reconstructing the same object (could optimise away for
-    // pure constructors, and we probably want to discourage
-    // impure constructors anyway
-    // Bit of a pain if there are many arguments
-    public def orElse fun[T2] => (func: Function[Option[T2]]) =>
-        some[T](value);
+    members {
+        map fun[R] => (func: Function[T, R]) =>
+            some[T](func(value)),
         
-    public def valueOrElse fun[T2] => (func: Function[T2]) =>
-        value;
-        
-    public def toSequence fun() =>
-        _sequences.cons[T](value, _sequences.nil);
-        
-    public def equals fun(other: Option[T]) =>
-        other.map(fun(otherValue: T) => equal(value, otherValue))
-            .orElse(fun() => false)
+        // TODO: need this i.e. need to implement methods to avoid
+        // reconstructing the same object (could optimise away for
+        // pure constructors, and we probably want to discourage
+        // impure constructors anyway
+        // Bit of a pain if there are many arguments
+        orElse fun[T2] => (func: Function[Option[T2]]) =>
+            some[T](value),
+            
+        valueOrElse fun[T2] => (func: Function[T2]) =>
+            value,
+            
+        toSequence fun() =>
+            _sequences.cons[T](value, _sequences.nil),
+
+        // HACK: using value directly fails due to this binding not being
+        // resolved correctly
+        equals fun(other: Option[T]) => (fun(x: T) =>
+            other.map(fun(otherValue: T) => equal(x, otherValue))
+                .valueOrElse(fun() => false)
+        )(value)
+    }
 };
