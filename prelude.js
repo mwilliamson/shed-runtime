@@ -84,32 +84,43 @@ var match = function(value) {
     $shed.Function = $shed.class(function() { }, "Function");
     
     var number = $shed.number = $shed.class(function(value) {
-        return {
-            $class: $shed.number,
-            $value: value,
-            equals: function(other) {
-                return boolean(value === other.$value);
-            },
-            lessThan: function(other) {
-                return boolean(value < other.$value);
-            },
-            lessThanOrEqual: function(other) {
-                return boolean(value <= other.$value);
-            },
-            greaterThan: function(other) {
-                return boolean(value > other.$value);
-            },
-            subtract: function(other) {
-                return number(value - other.$value);
-            },
-            add: function(other) {
-                return number(value + other.$value);
-            },
-            toString: function() {
-                return string(value.toString());
-            }
-        };
+        return new Double(value);
     }, "Double");
+    
+    function Double(value) {
+        this.$value = value;
+    }
+    
+    Double.prototype.$usesThis = true;
+    Double.prototype.$class = $shed.number;
+    
+    Double.prototype.equals = function(other) {
+        return boolean(this.$value === other.$value);
+    };
+    
+    Double.prototype.lessThan = function(other) {
+        return boolean(this.$value < other.$value);
+    };
+    
+    Double.prototype.lessThanOrEqual = function(other) {
+        return boolean(this.$value <= other.$value);
+    };
+    
+    Double.prototype.greaterThan = function(other) {
+        return boolean(this.$value > other.$value);
+    };
+    
+    Double.prototype.subtract = function(other) {
+        return number(this.$value - other.$value);
+    };
+    
+    Double.prototype.add = function(other) {
+        return number(this.$value + other.$value);
+    };
+    
+    Double.prototype.toString = function() {
+        return string(this.$value.toString());
+    };
     
     var string = $shed.string = $shed.class(function(value) {
         return new String(value);
