@@ -326,8 +326,7 @@ var List = function() {
     return dummyType;
 };
 
-var Tuple = $shed.class(function() {
-    var values = Array.prototype.slice.call(arguments, 0);
+var Tuple = $shed.class(function(values) {
     return {
         $class: Tuple,
         $values: values,
@@ -358,13 +357,20 @@ var Tuple = $shed.class(function() {
             newValues.push(value);
             return tuple.apply(this, newValues);
         },
+        appendDestructive: function(value) {
+            values.push(value);
+            return this;
+        },
         map: function(func) {
             return func.apply(null, values);
         }
     };
 }, "Tuple");
 
-var tuple = Tuple;
+function tuple() {
+    var values = Array.prototype.slice.call(arguments, 0);
+    return new Tuple(values);
+}
 
 var tupleFromSequence = function(sequence) {
     var values = [];
