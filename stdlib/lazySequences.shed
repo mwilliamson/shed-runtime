@@ -12,12 +12,14 @@ def map fun[F, T] => (func: Function[F, T], sequence: Sequence[F]) =>
     if sequences.isNil(sequence) then
         sequences.nil
     else
-        MappedCons(func, sequence)
+        // TODO: use caching to defer evaluating the head until
+        // it's required, but ensure it's only evaluated once
+        MappedCons(func, func(sequence.head()), sequence.tail())
 
-def MappedCons class[F, T] => (func: Function[F, T], sequence: Cons[T]) => {
+def MappedCons class[F, T] => (func: Function[F, T], head: T, tail: Sequence[F]) => {
     members {
-        head fun() => func(sequence.head()),
-        tail fun() => map[F, T](func, sequence.tail())
+        head fun() => head,
+        tail fun() => map[F, T](func, tail)
     }
 }
 
