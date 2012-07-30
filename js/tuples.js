@@ -1,9 +1,14 @@
 $shed.exportModule("tuples", function() {
+    var Tuple = $shed.class(function(values) {
+        return new $tupleConstructor(values);
+    }, "Tuple");
+    
     function $tupleConstructor(values) {
         this.$values = values;
     }
 
     $tupleConstructor.prototype.$class = Tuple;
+    $tupleConstructor.prototype.$usesThis = true;
 
     $tupleConstructor.prototype.equals = function(other) {
         if (classOf(other) !== Tuple) {
@@ -43,10 +48,6 @@ $shed.exportModule("tuples", function() {
     $tupleConstructor.prototype.map = function(func) {
         return func.apply(null, this.$values);
     };
-
-    var Tuple = $shed.class(function(values) {
-        return new $tupleConstructor(values);
-    }, "Tuple");
 
     return {
         head: function(tuple) {
