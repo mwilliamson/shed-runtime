@@ -11,12 +11,14 @@ members {
     lazyCons,
     forEach,
     singleton,
-    reversed
+    reversed,
+    filter
 }
 
 import _sequences;
 import options;
 import trampolining;
+import lists;
 
 val Sequence = _sequences.Sequence;
 val nil = _sequences.nil;
@@ -84,3 +86,6 @@ def reversed2 fun[T] => (alreadyReversed: Sequence[T], toReverse: Sequence[T]) =
         alreadyReversed
     else
         reversed2[T](cons[T](toReverse.head(), alreadyReversed), toReverse.tail())
+
+def filter fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) : Sequence[T] =>
+    lists.sequenceToList(sequence).filter(predicate).toSequence()
