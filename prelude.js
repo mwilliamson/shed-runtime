@@ -148,6 +148,15 @@ var match = function(value) {
     String.prototype.substring = function(startIndex, endIndex) {
         return string(this.$value.substring(startIndex.$value, endIndex.$value));
     };
+    String.prototype.replace = function(oldString, newString) {
+        // TODO: remove duplication (also in regex.js)
+        function escapeRegex(string) {
+            return string.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
+        }
+        
+        var regex = new RegExp(escapeRegex(oldString.$value), "g");
+        return string(this.$value.replace(regex, newString.$value));
+    };
     String.prototype.toString = function() {
         return self;
     };
