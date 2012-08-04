@@ -1,13 +1,14 @@
 $shed.exportModule("lists", function() {
     var options = $shed.js.import("options");
-    var sequences = $shed.js.import("sequences");
     var tuples = $shed.js.import("tuples");
+    var _sequences = $shed.js.import("_sequences");
     
     var sequenceToList = function(sequence) {
         var result = [];
-        sequences.forEach(function(value) {
-            result.push(value);
-        }, sequence);
+        while (!_sequences.isNil(sequence)) {
+            result.push(sequence.head());
+            sequence = sequence.tail();
+        }
         return $shed.lists.createFromArray(result);
     };
 
