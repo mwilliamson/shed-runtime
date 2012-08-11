@@ -272,6 +272,16 @@ var match = function(value) {
             return new ImmutableArrayList(array);
         }
     };
+    
+    $shed.toJsArray = function(value) {
+        if (value.$toJsArray) {
+            return value.$toJsArray();
+        }
+        throw new Error(
+            "Could not convert value to JavaScript array: " + 
+                represent(value).$value
+        )
+    };
 })();
 
 var classOf = function(value) {
