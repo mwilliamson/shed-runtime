@@ -27,12 +27,16 @@ $shed.exportModule("files", function() {
         return this;
     };
     
-    Finder.prototype.directory = function(directory) {
+    Finder.prototype.root = function(root) {
+        return this.roots(listOf(root));
+    };
+    
+    Finder.prototype.roots = function(roots) {
         return new Finder({
-            directory: directory,
+            roots: roots,
             filters: this.$options.filters
         });
-    };
+    }
     
     Finder.prototype.filterFiles = function() {
         return new FinderFileFilter(this);
@@ -43,7 +47,9 @@ $shed.exportModule("files", function() {
         var promise = promises.createPromise();
         
         var result = [];
-        var unexpanded = [this.$options.directory.$value];
+        var unexpanded = $shed.toJsArray(this.$options.roots).slice(0).map(function(path) {
+            return path.$value;
+        });
         
         function next() {
             if (unexpanded.length === 0) {
@@ -92,10 +98,10 @@ $shed.exportModule("files", function() {
     FinderFileFilter.prototype.hasExtension = function(extension) {
         var filters = this.$finder.$options.filters.slice(0);
         filters.push(function(file) {
-            return new RegExp("" + extension.$value + "$").test(file);
+            return new RegExp("\\." + extension.$value + "$").test(file);
         });
         return new Finder({
-            directory: this.$finder.$options.directory,
+            roots: this.$finder.$options.roots,
             filters: filters
         });
     };
