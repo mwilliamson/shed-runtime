@@ -10,8 +10,13 @@ import sequenceables;
 def fromList fun[T] => (list: List[T]) => ListSet[T](list);
 
 def ListSet class[T] => (list: List[T]) => {
-    public def contains fun(value: T) =>
+    members {
+        contains,
+        toSequence
+    }
+    
+    def contains fun(value: T) =>
         sequenceables.any[T](fun(element: T) => value.equals(element), list);
         
-    public def toSequence fun() => list.toSequence();
+    def toSequence fun() => list.toSequence();
 };
