@@ -158,7 +158,7 @@ var match = function(value) {
         return string(this.$value.replace(regex, newString.$value));
     };
     String.prototype.toString = function() {
-        return self;
+        return this;
     };
     String.prototype.represent = function() {
         return string(JSON.stringify(this.$value));
