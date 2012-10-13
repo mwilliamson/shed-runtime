@@ -25,7 +25,7 @@ $shed.exportModule("tuples", function() {
         return true;
     };
 
-    $tupleConstructor.prototype.represent = function() {
+    $tupleConstructor.prototype._represent = function() {
         var valuesString = this.$values.map(function(value) {
             return represent(value).$value;
         }).join(", ");

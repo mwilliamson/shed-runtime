@@ -56,14 +56,14 @@ var match = function(value) {
         equals: function(other) {
             return this === other;
         },
-        _jsName: function() {
+        $_jsName: function() {
             return this.$className ? this.$className : "$Anonymous";
         },
-        represent: function() {
-            return $shed.string("Class<" + this._jsName() + ">");
+        _represent: function() {
+            return $shed.string("Class<" + this.$_jsName() + ">");
         },
         identifier: function() {
-            return $shed.string(this._jsName());
+            return $shed.string(this.$_jsName());
         },
         $define: function(name) {
             return $shed.class(this, name);
@@ -160,7 +160,7 @@ var match = function(value) {
     String.prototype.toString = function() {
         return self;
     };
-    String.prototype.represent = function() {
+    String.prototype._represent = function() {
         return string(JSON.stringify(this.$value));
     };
     
@@ -242,7 +242,7 @@ var match = function(value) {
         return sequence(0);
     };
     
-    ImmutableArrayList.prototype.represent = function() {
+    ImmutableArrayList.prototype._represent = function() {
         var toJsString = function(value) {
             return value.$value;
         };
@@ -315,8 +315,8 @@ var or = function() {
 // TODO: should detect whether or not an object has an appropriate
 // representation more safely
 var represent = function(value) {
-    if (value.represent) {
-        return value.represent();
+    if (value._represent) {
+        return value._represent();
     } else if (value.struct) {
         return represent(value.struct());
     } else if ($isBoolean(value)) {

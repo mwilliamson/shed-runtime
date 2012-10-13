@@ -13,11 +13,11 @@ def Struct class(type: Type, fields: List[Struct]) => {
     members {
         type fun() => type,
         fields fun() => fields,
-        represent representation,
-        equals equals
+        _represent,
+        equals
     }
     
-    def representation fun() =>
+    def _represent fun() =>
         type.identifier()
             .concat("(")
             .concat(strings.join(", ", lazySequenceables.map(represent, fields)))
