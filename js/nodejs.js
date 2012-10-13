@@ -26,6 +26,9 @@ $shed.exportModule("nodejs", function() {
             stdout: function() {
                 return $shed.string(stdout);
             },
+            stderr: function() {
+                return $shed.string(stderr);
+            },
             exitCode: function() {
                 return $shed.number(err.code);
             }

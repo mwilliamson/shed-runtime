@@ -158,7 +158,7 @@ var match = function(value) {
         return string(this.$value.replace(regex, newString.$value));
     };
     String.prototype.toString = function() {
-        return self;
+        return this;
     };
     String.prototype._represent = function() {
         return string(JSON.stringify(this.$value));
@@ -271,6 +271,16 @@ var match = function(value) {
         createFromArray: function(array) {
             return new ImmutableArrayList(array);
         }
+    };
+    
+    $shed.toJsArray = function(value) {
+        if (value.$toJsArray) {
+            return value.$toJsArray();
+        }
+        throw new Error(
+            "Could not convert value to JavaScript array: " + 
+                represent(value).$value
+        )
     };
 })();
 

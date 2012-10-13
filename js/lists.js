@@ -26,8 +26,21 @@ $shed.exportModule("lists", function() {
         return $shed.lists.createFromArray(result);
     };
     
+    var concat = function(listOfLists) {
+        var result = [];
+        
+        listOfLists.forEach(function(list) {
+            list.forEach(function(value) {
+                result.push(value);
+            });
+        });
+        
+        return $shed.lists.createFromArray(result);
+    };
+    
     return {
         sequenceToList: sequenceToList,
-        zip: zip
+        zip: zip,
+        concat: concat
     };
 });

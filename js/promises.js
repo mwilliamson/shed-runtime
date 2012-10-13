@@ -1,13 +1,23 @@
 $shed.exportModule("promises", function() {
     function constructPromise() {
-        var waitingMaps = [];
+        var waiters = [];
         
         var unfulfilledImpl = {
             map: function(func) {
                 var promise = createPromise();
-                waitingMaps.push(function() {
+                waiters.push(function() {
                     var result = func.apply(null, arguments);
                     promise.fulfill(result);
+                });
+                return promise;
+            },
+            bind: function(func) {
+                var promise = createPromise();
+                waiters.push(function() {
+                    var result = func.apply(null, arguments);
+                    result.map(function(value) {
+                        promise.fulfill(value);
+                    });
                 });
                 return promise;
             },
@@ -18,13 +28,16 @@ $shed.exportModule("promises", function() {
         
         function fulfill() {
             var results = arguments;
-            waitingMaps.forEach(function(waitingMap) {
-                waitingMap.apply(null, results);
+            waiters.forEach(function(waiter) {
+                waiter.apply(null, results);
             });
             
             impl = {
                 map: function(func) {
                     return createFulfilledPromise(func.apply(null, results));
+                },
+                bind: function(func) {
+                    return func.apply(null, results);
                 }
             };
         }
@@ -33,6 +46,9 @@ $shed.exportModule("promises", function() {
             $class: Promise,
             map: function(func) {
                 return impl.map(func);
+            },
+            bind: function(func) {
+                return impl.bind(func);
             },
             fulfill: function() {
                 return fulfill.apply(this, arguments);
@@ -49,14 +65,18 @@ $shed.exportModule("promises", function() {
     }
     
     function combineList(promises) {
+        if (promises.length().$value === 0) {
+            return createFulfilledPromise(emptyList);
+        }
+        
         var combinedPromise = createPromise();
         var values = [];
         
         var numberOfFulfilledPromises = 0;
-        promises.forEach(function(promise) {
+        promises.forEach(function(promise, index) {
             promise.map(function(value) {
                 numberOfFulfilledPromises += 1;
-                values.push(value);
+                values[index] = value;
                 if (numberOfFulfilledPromises === promises.length().$value) {
                     combinedPromise.fulfill($shed.lists.createFromArray(values));
                 }
