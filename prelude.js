@@ -122,6 +122,10 @@ var match = function(value) {
         return string(this.$value.toString());
     };
     
+    Double.prototype._represent = function() {
+        return string(this.$value.toString());
+    };
+    
     var string = $shed.string = $shed.class(function(value) {
         return new String(value);
     }, "String");
