@@ -161,6 +161,12 @@ var match = function(value) {
         var regex = new RegExp(escapeRegex(oldString.$value), "g");
         return string(this.$value.replace(regex, newString.$value));
     };
+    String.prototype.indexOf = function(subString) {
+        // TODO: fix ordering of modules
+        var options = $shed.js.import("options");
+        var index = this.$value.indexOf(subString.$value);
+        return index === -1 ? options.none : options.some(number(index));
+    };
     String.prototype.toString = function() {
         return this;
     };
