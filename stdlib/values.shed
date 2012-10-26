@@ -5,7 +5,7 @@ members {
     attribute Attribute
 }
 
-import sequenceables;
+import sequences;
 
 // TODO: Should assert that type is T
 def AsValue class[T] => (value: T, type: Type, attributes: List[Attribute]) => {
@@ -13,7 +13,7 @@ def AsValue class[T] => (value: T, type: Type, attributes: List[Attribute]) => {
         equals
     }
     
-    def equals fun(other: T) => sequenceables.all[Attribute](
+    def equals fun(other: T) => sequences.all[Attribute](
         fun(attribute: Attribute) => attribute.get(value).equals(attribute.get(other)),
         attributes
     );

@@ -9,52 +9,65 @@ members {
 import sequences;
 
 def map fun[F, T] => (func: Function[F, T], sequence: Sequence[F]) =>
-    if sequences.isNil(sequence) then
-        sequences.nil
-    else
-        // TODO: use caching to defer evaluating the head until
-        // it's required, but ensure it's only evaluated once
-        MappedCons(func, func(sequence.head()), sequence.tail())
+    MappedSequence(func, sequence)
 
-def MappedCons class[F, T] => (func: Function[F, T], head: T, tail: Sequence[F]) => {
+def MappedSequence class[F, T] => (func: Function[F, T], sequence: Sequence[F]) => {
     members {
-        head fun() => head,
-        tail fun() => map[F, T](func, tail)
+        currentItem
     }
+    
+    def currentItem fun() => let
+        val item = sequence.currentItem()
+        in if sequences.isNil(item) then
+            sequences.nil
+        else
+            sequences.cons(func(item.head()), map(func, item.tail()))
 }
 
 def filter fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
-    if sequences.isNil(sequence) then
-        sequences.nil
-    else if predicate(sequence.head()) then
-        FilteredCons(predicate, sequence)
-    else
-        filter[T](predicate, sequence.tail())
+    FilteredSequence(predicate, sequence)
         
-def FilteredCons class[T] => (predicate: Function[T, Boolean], sequence: Cons[T]) => {
+def FilteredSequence class[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) => {
     members {
-        head fun() => sequence.head(),
-        tail fun() => filter[T](predicate, sequence.tail())
+        currentItem
     }
+    
+    def currentItem fun() => let
+        val item = sequence.currentItem()
+        in if sequences.isNil(item) then
+            sequences.nil
+        else let
+            val head = item.head()
+            in if predicate(head) then
+                sequences.cons(head, filter(predicate, item.tail()))
+            else
+                filter(predicate, item.tail()).currentItem()
 }
 
 def concat fun[T] => (sequenceOfSequences: Sequence[Sequence[T]]) =>
-    if sequences.isNil(sequenceOfSequences) then
-        sequences.nil
-    else do {
-        val headSequence = sequenceOfSequences.head();
-        return if sequences.isNil(headSequence) then
-            concat[T](sequenceOfSequences.tail())
-        else
-            ConcatSequence(headSequence, sequenceOfSequences);
-    }
+    ConcatSequence(sequenceOfSequences)
 
-def ConcatSequence class[T] => (headSequence: Cons[T], sequenceOfSequences: Sequence[T]) => {
+def ConcatSequence class[T] => (sequenceOfSequences: Sequence[T]) => {
     members {
+        currentItem,
         head fun() => headSequence.head(),
         tail fun() => concat[T](sequence.cons(
             headSequence.tail(),
             sequenceOfSequences.tail()
         ))
     }
+    
+    def currentItem fun() => let
+        val itemOfSequences = sequenceOfSequences.currentItem()
+        in if sequences.isNil(itemOfSequences) then
+            sequences.nil
+        else let
+            val headSequence = itemOfSequences.head().currentItem()
+            in if sequences.isNil(headSequence) then
+                concat(itemOfSequences.tail()).currentItem()
+            else
+                sequences.cons(
+                    headSequence.head(),
+                    ConcatSequence(sequence.cons(headSequence.tail(), itemOfSequences.tail()))
+                )
 }

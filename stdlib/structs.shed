@@ -5,8 +5,8 @@ members {
 }
 
 import lists;
-import sequenceables;
-import lazySequenceables;
+import sequences;
+import lazySequences;
 import strings;
     
 def Struct class(type: Type, fields: List[Struct]) => {
@@ -20,7 +20,7 @@ def Struct class(type: Type, fields: List[Struct]) => {
     def _represent fun() =>
         type.identifier()
             .concat("(")
-            .concat(strings.join(", ", lazySequenceables.map(represent, fields)))
+            .concat(strings.join(", ", lazySequences.map(represent, fields)))
             .concat(")")
     
     def equals fun(other: Struct) =>
@@ -33,7 +33,7 @@ def Struct class(type: Type, fields: List[Struct]) => {
         if not(equal(first.length(), second.length())) then
             false
         else
-            sequenceables.all(
+            sequences.all(
                 pack(equal),
                 lists.zip(first, second)
             )

@@ -1,91 +1,96 @@
 module sequences;
 
 members {
-    Sequence,
+    SequenceItem,
     nil,
     isNil,
     cons,
     head,
     any,
     all,
-    lazyCons,
     forEach,
     singleton,
     reversed,
-    filter
+    filter,
+    withItem
 }
 
-import _sequences;
+import _sequenceItems;
 import options;
 import trampolining;
 import lists;
 
-val Sequence = _sequences.Sequence;
-val nil = _sequences.nil;
-val isNil = _sequences.isNil;
-val cons = _sequences.cons;
+val SequenceItem = _sequenceItems.SequenceItem;
+val nil = _sequenceItems.nil;
+val isNil = _sequenceItems.isNil;
+val cons = _sequenceItems.cons;
 
-def head fun[T] => (sequence: Sequence[T]) => 
-    if isNil(sequence) then
+def head fun[T] => (sequence: Sequence[T]) => let
+    val item = sequence.currentItem()
+    in if isNil(item) then
         options.none
     else
-        options.some[T](sequence.head());
+        options.some[T](item.head());
+
+def withItem fun[F, T] => (sequence: Sequence[F], func: Function[F, Sequence[F], T]) => let
+    val item = sequence.currentItem()
+    in if isNil(item) then
+        options.none
+    else
+        options.some(func(item.head(), item.tail()))
+    
 
 def any fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
     trampolining.trampoline(fun() => anyTrampolined[T](predicate, sequence));
     
-def anyTrampolined fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
-    if isNil(sequence) then
+def anyTrampolined fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) => let
+    val item = sequence.currentItem()
+    in if isNil(item) then
         trampolining.stop(false)
-    else if predicate(sequence.head()) then
+    else if predicate(item.head()) then
         trampolining.stop(true)
     else
-        trampolining.nextFunction(fun() => anyTrampolined[T](predicate, sequence.tail()));
+        trampolining.nextFunction(fun() => anyTrampolined[T](predicate, item.tail()));
 
 def all fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
     trampolining.trampoline(fun() => allTrampolined[T](predicate, sequence));
     
-def allTrampolined fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
-    if isNil(sequence) then
+def allTrampolined fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) => let
+    val item = sequence.currentItem()
+    in if isNil(item) then
         trampolining.stop(true)
-    else if predicate(sequence.head()) then
-        trampolining.nextFunction(fun() => allTrampolined[T](predicate, sequence.tail()))
+    else if predicate(item.head()) then
+        trampolining.nextFunction(fun() => allTrampolined[T](predicate, item.tail()))
     else
         trampolining.stop(false);
-
-def lazyCons class[T] => (myHead: T, deferredTail: Function[Sequence[T]]) => {
-    members {
-        head fun() => myHead,
-        tail deferredTail
-    }
-}
 
 def forEach fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) =>
     trampolining.trampoline(fun() => forEachTrampolined[T](func, sequence));
     
-def forEachTrampolined fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) =>
-    if isNil(sequence) then do {
+def forEachTrampolined fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) => let
+    val item = sequence.currentItem()
+    in if isNil(item) then do {
         return trampolining.stop(());
     } else do {
-        func(sequence.head());
-        return trampolining.nextFunction(fun() => forEachTrampolined[T](func, sequence.tail()));
+        func(item.head());
+        return trampolining.nextFunction(fun() => forEachTrampolined[T](func, item.tail()));
     };
 
 def singleton class[T] => (value: T) => {
     members {
-        head fun() => value,
-        tail fun() => nil
+        currentItem fun() => cons(value, nil)
     }
 }
 
 def reversed fun[T] => (sequence: Sequence[T]) : Sequence[T] =>
     reversed2[T](nil, sequence);
 
-def reversed2 fun[T] => (alreadyReversed: Sequence[T], toReverse: Sequence[T]) =>
-    if isNil(toReverse) then
+def reversed2 fun[T] => (alreadyReversed: Sequence[T], toReverse: Sequence[T]) => let
+    val toReverseItem = toReverse.currentItem()
+    in if isNil(toReverseItem) then
         alreadyReversed
     else
-        reversed2[T](cons[T](toReverse.head(), alreadyReversed), toReverse.tail())
+        reversed2[T](cons(toReverseItem.head(), alreadyReversed), toReverseItem.tail())
 
 def filter fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) : Sequence[T] =>
-    lists.sequenceToList(sequence).filter(predicate).toSequence()
+    lists.sequenceToList(sequence).filter(predicate)

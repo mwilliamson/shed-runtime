@@ -1,14 +1,9 @@
 module strings;
 
 members {
-    join,
-    joinSequence
+    join
 }
 
 import _strings;
 
-// : Fun(String, Sequenceable[String]) => String
-def join fun(separator: String, sequenceable: Sequenceable[String]) =>
-    joinSequence(separator, sequenceable.toSequence());
-
-val joinSequence = _strings.joinSequence;
+val join = _strings.joinSequence;

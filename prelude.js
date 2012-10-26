@@ -231,25 +231,31 @@ var match = function(value) {
         return this.$values;
     };
     
-    ImmutableArrayList.prototype.toSequence = function() {
+    ImmutableArrayList.prototype.currentItem = function() {
         // HACK: should really define ImmutableArrayList later to avoid this late import
         var sequences = $shed.js.import("sequences");
         var values = this.$values;
         
-        var sequence = function(index) {
+        var item = function(index) {
             if (values.length === index) {
                 return sequences.nil;
             } else {
-                return sequences.lazyCons(
+                return sequences.cons(
                     values[index],
-                    function() {
-                        return sequence(index + 1);
-                    }
+                    sequence(index + 1)
                 );
             }
         };
         
-        return sequence(0);
+        var sequence = function(index) {
+            return {
+                currentItem: function() {
+                    return item(index);
+                }
+            };
+        };
+        
+        return item(0);
     };
     
     ImmutableArrayList.prototype._represent = function() {
