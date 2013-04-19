@@ -4,6 +4,7 @@ members {
     SequenceItem,
     nil,
     isNil,
+    isEmpty,
     cons,
     head,
     any,
@@ -24,6 +25,9 @@ val SequenceItem = _sequenceItems.SequenceItem;
 val nil = _sequenceItems.nil;
 val isNil = _sequenceItems.isNil;
 val cons = _sequenceItems.cons;
+
+def isEmpty fun[T] => (sequence: Sequence[T]) =>
+    isNil(sequence.currentItem())
 
 def head fun[T] => (sequence: Sequence[T]) => let
     val item = sequence.currentItem()
