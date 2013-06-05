@@ -198,7 +198,7 @@ var match = function(value) {
     };
     
     ImmutableArrayList.prototype.foldLeft = function(initialValue, func) {
-        return this.$values.reduce(func, initialValue);
+        return this.$values.reduce(function(a, b) { return func(a, b); }, initialValue);
     };
     
     ImmutableArrayList.prototype.isEmpty = function() {
