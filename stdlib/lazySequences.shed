@@ -51,7 +51,7 @@ def ConcatSequence class[T] => (sequenceOfSequences: Sequence[T]) => {
     members {
         currentItem,
         head fun() => headSequence.head(),
-        tail fun() => concat[T](sequence.cons(
+        tail fun() => concat[T](sequences.cons(
             headSequence.tail(),
             sequenceOfSequences.tail()
         ))
@@ -68,6 +68,6 @@ def ConcatSequence class[T] => (sequenceOfSequences: Sequence[T]) => {
             else
                 sequences.cons(
                     headSequence.head(),
-                    ConcatSequence(sequence.cons(headSequence.tail(), itemOfSequences.tail()))
+                    ConcatSequence(sequences.cons(headSequence.tail(), itemOfSequences.tail()))
                 )
 }
