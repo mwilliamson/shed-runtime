@@ -39,8 +39,15 @@ $shed.exportModule("lists", function() {
         return $shed.lists.createFromArray(result);
     };
     
+    var reversed = function(sequence) {
+        // TODO: fix circular imports
+        var sequences = $shed.js.import("sequences");
+        return sequenceToList(sequences.reversed(sequence));
+    };
+    
     return {
         sequenceToList: sequenceToList,
+        reversed: reversed,
         zip: zip,
         concat: concat
     };
