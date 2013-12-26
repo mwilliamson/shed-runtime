@@ -1,14 +1,13 @@
 module options;
 
-members {
+members::
     none,
     some
-}
 
 import _sequenceItems;
 
-val none = object {
-    members {
+val none = object::
+    members::
         map fun[R] => (func: Function[Nothing, R]) =>
             none,
             
@@ -23,11 +22,9 @@ val none = object {
             
         equals fun(other: Option[Any]) =>
             other.map(fun() => false).valueOrElse(fun() => true)
-    }
-};
 
-def some class[T] => (value: T) => {
-    members {
+def some class[T] => (value: T) => ::
+    members::
         map fun[R] => (func: Function[T, R]) =>
             some[T](func(value)),
         
@@ -51,5 +48,3 @@ def some class[T] => (value: T) => {
             other.map(fun(otherValue: T) => equal(x, otherValue))
                 .valueOrElse(fun() => false)
         )(value)
-    }
-};

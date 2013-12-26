@@ -1,8 +1,7 @@
 module strings;
 
-members {
+members::
     join
-}
 
 import _strings;
 

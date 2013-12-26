@@ -1,6 +1,6 @@
 module sequences;
 
-members {
+members::
     SequenceItem,
     nil,
     isNil,
@@ -15,7 +15,6 @@ members {
     reversed,
     filter,
     withItem
-}
 
 import _sequenceItems;
 import options;
@@ -81,18 +80,15 @@ def forEach fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) =>
     
 def forEachTrampolined fun[T] => (func: Function[T, Unit], sequence: Sequence[T]) => let
     val item = sequence.currentItem()
-    in if isNil(item) then do {
+    in if isNil(item) then do::
         return trampolining.stop(());
-    } else do {
+    else do::
         func(item.head());
         return trampolining.nextFunction(fun() => forEachTrampolined[T](func, item.tail()));
-    };
 
-def singleton class[T] => (value: T) => {
-    members {
+def singleton class[T] => (value: T) => ::
+    members::
         currentItem fun() => cons(value, nil)
-    }
-}
 
 def reversed fun[T] => (sequence: Sequence[T]) : Sequence[T] =>
     reversed2[T](nil, sequence);

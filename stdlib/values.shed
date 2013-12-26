@@ -1,27 +1,22 @@
 module values;
 
-members {
+members::
     asValue AsValue,
     attribute Attribute
-}
 
 import sequences;
 
 // TODO: Should assert that type is T
-def AsValue class[T] => (value: T, type: Type, attributes: List[Attribute]) => {
-    members {
+def AsValue class[T] => (value: T, type: Type, attributes: List[Attribute]) => ::
+    members::
         equals
-    }
     
     def equals fun(other: T) => sequences.all[Attribute](
         fun(attribute: Attribute) => attribute.get(value).equals(attribute.get(other)),
         attributes
     );
-}
 
-def Attribute class[T, U] => (name: String, get: Function[T, U]) => {
-    members {
+def Attribute class[T, U] => (name: String, get: Function[T, U]) => ::
+    members::
         name fun() => name,
         get fun(value: T) => get(value)
-    }
-}

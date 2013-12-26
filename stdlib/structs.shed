@@ -1,21 +1,19 @@
 module structs;
 
-members {
+members::
     create Struct
-}
 
 import lists;
 import sequences;
 import lazySequences;
 import strings;
     
-def Struct class(type: Type, fields: List[Struct]) => {
-    members {
+def Struct class(type: Type, fields: List[Struct]) => ::
+    members::
         type fun() => type,
         fields fun() => fields,
         _represent,
         equals
-    }
     
     def _represent fun() =>
         type.identifier()
@@ -37,4 +35,3 @@ def Struct class(type: Type, fields: List[Struct]) => {
                 pack(equal),
                 lists.zip(first, second)
             )
-}

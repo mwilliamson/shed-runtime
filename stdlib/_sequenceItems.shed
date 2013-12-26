@@ -1,20 +1,17 @@
 module _sequenceItems;
 
-members {
+members::
     Nil,
     nil,
     cons,
     isNil,
     SequenceItem
-}
 
 import _hacks;
 
-def Nil class() => {
-    members {
+def Nil class() => ::
+    members::
         currentItem fun() => nil
-    }
-}
 
 val nil = Nil();
 
@@ -25,14 +22,12 @@ def cons fun[T] => (head: T, tail: Sequence[T]) =>
 def isNil fun(sequence: SequenceItem[Any]) =>
     _hacks.isSame(sequence, nil);
 
-def Cons class[T] => (head: T, tail: Sequence[T]) => {
-    members {
+def Cons class[T] => (head: T, tail: Sequence[T]) => ::
+    members::
         head fun() => head,
         tail fun() => tail,
         currentItem fun() => Cons(head, tail)
-    }
-};
 
 // TODO: should be SequenceItem = Nil | Cons, where Cons is an interface
-def SequenceItem class[T] => () => {
-}
+def SequenceItem class[T] => () => ::
+    pass

@@ -1,20 +1,18 @@
 module lazySequences;
 
-members {
+members::
     map,
     filter,
     concat
-}
 
 import sequences;
 
 def map fun[F, T] => (func: Function[F, T], sequence: Sequence[F]) =>
     MappedSequence(func, sequence)
 
-def MappedSequence class[F, T] => (func: Function[F, T], sequence: Sequence[F]) => {
-    members {
+def MappedSequence class[F, T] => (func: Function[F, T], sequence: Sequence[F]) => ::
+    members::
         currentItem
-    }
     
     def currentItem fun() => let
         val item = sequence.currentItem()
@@ -22,15 +20,13 @@ def MappedSequence class[F, T] => (func: Function[F, T], sequence: Sequence[F]) 
             sequences.nil
         else
             sequences.cons(func(item.head()), map(func, item.tail()))
-}
 
 def filter fun[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) =>
     FilteredSequence(predicate, sequence)
         
-def FilteredSequence class[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) => {
-    members {
+def FilteredSequence class[T] => (predicate: Function[T, Boolean], sequence: Sequence[T]) => ::
+    members::
         currentItem
-    }
     
     def currentItem fun() => let
         val item = sequence.currentItem()
@@ -42,20 +38,18 @@ def FilteredSequence class[T] => (predicate: Function[T, Boolean], sequence: Seq
                 sequences.cons(head, filter(predicate, item.tail()))
             else
                 filter(predicate, item.tail()).currentItem()
-}
 
 def concat fun[T] => (sequenceOfSequences: Sequence[Sequence[T]]) =>
     ConcatSequence(sequenceOfSequences)
 
-def ConcatSequence class[T] => (sequenceOfSequences: Sequence[T]) => {
-    members {
+def ConcatSequence class[T] => (sequenceOfSequences: Sequence[T]) => ::
+    members::
         currentItem,
         head fun() => headSequence.head(),
         tail fun() => concat[T](sequences.cons(
             headSequence.tail(),
             sequenceOfSequences.tail()
         ))
-    }
     
     def currentItem fun() => let
         val itemOfSequences = sequenceOfSequences.currentItem()
@@ -70,4 +64,3 @@ def ConcatSequence class[T] => (sequenceOfSequences: Sequence[T]) => {
                     headSequence.head(),
                     ConcatSequence(sequences.cons(headSequence.tail(), itemOfSequences.tail()))
                 )
-}

@@ -1,25 +1,22 @@
 module sets;
 
-members {
+members::
     fromList,
     emptySet
-}
 
 import sequences;
 
 // TODO: this is horribly inefficient. Write a proper HashSet class
 def fromList fun[T] => (list: List[T]) => ListSet[T](list);
 
-def ListSet class[T] => (list: List[T]) => {
-    members {
+def ListSet class[T] => (list: List[T]) => ::
+    members::
         contains,
         currentItem
-    }
     
     def contains fun(value: T) =>
         sequences.any[T](fun(element: T) => value.equals(element), list);
         
     def currentItem fun() => list.currentItem();
-};
 
 val emptySet = fromList(listOf());

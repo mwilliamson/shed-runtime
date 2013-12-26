@@ -1,9 +1,8 @@
 module json;
 
-members {
+members::
     parseString,
     stringifyString
-}
 
 import _json;
 
