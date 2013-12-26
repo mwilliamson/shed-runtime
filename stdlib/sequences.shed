@@ -7,6 +7,7 @@ members {
     isEmpty,
     cons,
     head,
+    tail,
     any,
     all,
     forEach,
@@ -35,6 +36,13 @@ def head fun[T] => (sequence: Sequence[T]) => let
         options.none
     else
         options.some[T](item.head());
+
+def tail fun[T] => (sequence: Sequence[T]) => let
+    val item = sequence.currentItem()
+    in if isNil(item) then
+        options.none
+    else
+        options.some[T](item.tail())
 
 def withItem fun[F, T] => (sequence: Sequence[F], func: Function[F, Sequence[F], T]) => let
     val item = sequence.currentItem()
