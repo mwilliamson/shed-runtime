@@ -362,7 +362,7 @@ var List = function() {
 };
 
 var tuple = (function() {
-    var Tuple = $shed.js.import("tuples.Tuple");
+    var Tuple = $shed.js.import("tuples").Tuple;
     
     function tuple() {
         var values = Array.prototype.slice.call(arguments, 0);

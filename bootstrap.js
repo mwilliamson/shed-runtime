@@ -10,7 +10,7 @@ $shed.modules = $shed.modules || {};
             var value = func();
             modules[name].value = value;
             modules[name].evaluated = true;
-            var parts = name.split(".");
+            var parts = name.split("/");
             var current = $shed.modules;
             for (var i = 0; i < parts.length - 1; i += 1) {
                 current[parts[i]] = current[parts[i]] || {};
@@ -26,37 +26,28 @@ $shed.modules = $shed.modules || {};
     };
 
     $shed.import = function(name) {
-        var identifiers = name.$value.split(".");
-        var moduleResult = findParentModule(identifiers);
-        if (!moduleResult) {
-            throw new Error("Could not find module: " + name.$value);
-        }
-        var module = moduleResult.module;
-        if (!module.evaluated) {
-            module.evaluate();
-        }
-        
-        var value = module.value;
-        for (var depth = moduleResult.depth; depth < identifiers.length; depth += 1) {
-            if (!(identifiers[depth] in value)) {
-                throw new Error("Could not find module: " + name.$value);
-            }
-            value = value[identifiers[depth]];
+        // TODO: we should remove any usages with dots, so this only returns modules
+        var parts = name.$value.split(".");
+        var value = importModule(parts[0]);
+        for (var partIndex = 1; partIndex < parts.length; partIndex++) {
+            value = value[parts[partIndex]];
         }
         return value;
     };
     
-    var findParentModule = function(identifiers) {
-        for (var depth = identifiers.length; depth >= 1; depth -= 1) {
-            var module = modules[identifiers.slice(0, depth).join(".")];
-            if (module) {
-                return {
-                    module: module,
-                    depth: depth
-                };
-            }
+    function importModule(name) {
+        var module = findModule(name);
+        if (!module) {
+            throw new Error("Could not find module: " + name);
         }
-        return null;
+        if (!module.evaluated) {
+            module.evaluate();
+        }
+        return module.value;
+    }
+    
+    function findModule(name) {
+        return modules[name];
     };
     
     $shed.js = {
