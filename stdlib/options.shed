@@ -6,6 +6,11 @@ members::
 
 import _sequenceItems;
 
+// TODO: should be an interface
+
+def Option class[T] => () => ::
+    pass
+
 val none = object::
     members::
         map fun[R] => (func: Function[Nothing, R]) =>
