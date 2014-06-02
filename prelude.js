@@ -79,52 +79,15 @@ var match = function(value) {
     
     $shed.Unit = $shed.class(function() { }, "Unit");
     $shed.unit = {$class: $shed.Unit};
+    
     $shed.Boolean = {$class: $shed.class(function() { }, "Boolean")};
+    var boolean = $shed.boolean = function(value) {
+        return value;
+    };
     
     $shed.Function = $shed.class(function() { }, "Function");
     
-    var number = $shed.number = $shed.class(function(value) {
-        return new Double(value);
-    }, "Double");
-    
-    function Double(value) {
-        this.$value = value;
-    }
-    
-    Double.prototype.$usesThis = true;
-    Double.prototype.$class = $shed.number;
-    
-    Double.prototype.equals = function(other) {
-        return boolean(this.$value === other.$value);
-    };
-    
-    Double.prototype.lessThan = function(other) {
-        return boolean(this.$value < other.$value);
-    };
-    
-    Double.prototype.lessThanOrEqual = function(other) {
-        return boolean(this.$value <= other.$value);
-    };
-    
-    Double.prototype.greaterThan = function(other) {
-        return boolean(this.$value > other.$value);
-    };
-    
-    Double.prototype.subtract = function(other) {
-        return number(this.$value - other.$value);
-    };
-    
-    Double.prototype.add = function(other) {
-        return number(this.$value + other.$value);
-    };
-    
-    Double.prototype.toString = function() {
-        return string(this.$value.toString());
-    };
-    
-    Double.prototype._represent = function() {
-        return string(this.$value.toString());
-    };
+    var number = $shed.number = $shed.js.import("_doubles").number;
     
     var string = $shed.string = $shed.class(function(value) {
         return new String(value);
@@ -172,10 +135,6 @@ var match = function(value) {
     };
     String.prototype._represent = function() {
         return string(JSON.stringify(this.$value));
-    };
-    
-    var boolean = $shed.boolean = function(value) {
-        return value;
     };
     
     function ImmutableArrayList(values) {

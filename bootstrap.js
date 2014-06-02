@@ -25,14 +25,18 @@ $shed.modules = $shed.modules || {};
         };
     };
 
-    $shed.import = function(name) {
+    $shed.jsImport = function(name) {
         // TODO: we should remove any usages with dots, so this only returns modules
-        var parts = name.$value.split(".");
+        var parts = name.split(".");
         var value = importModule(parts[0]);
         for (var partIndex = 1; partIndex < parts.length; partIndex++) {
             value = value[parts[partIndex]];
         }
         return value;
+    }
+
+    $shed.import = function(name) {
+        return $shed.jsImport(name.$value);
     };
     
     function importModule(name) {
@@ -51,8 +55,6 @@ $shed.modules = $shed.modules || {};
     };
     
     $shed.js = {
-        import: function(name) {
-            return $shed.import($shed.string(name));
-        }
+        import: $shed.jsImport
     };
 })();
