@@ -11,7 +11,8 @@ import _hacks;
 
 def Nil class() => ::
     members::
-        currentItem fun() => nil
+        // TODO: use nil once variable dependency resolution works properly
+        currentItem fun() => Nil()
 
 val nil = Nil();
 
@@ -20,7 +21,7 @@ def cons fun[T] => (head: T, tail: Sequence[T]) =>
 
 // TODO: rather than using isNil, should really do a pattern match on Sequence
 def isNil fun(sequence: SequenceItem[Any]) =>
-    _hacks.isSame(sequence, nil);
+    equal(classOf(sequence), Nil)
 
 def Cons class[T] => (head: T, tail: Sequence[T]) => ::
     members::
