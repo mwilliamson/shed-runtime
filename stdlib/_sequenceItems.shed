@@ -7,8 +7,6 @@ members::
     isNil,
     SequenceItem
 
-import _hacks;
-
 def Nil class() => ::
     members::
         currentItem fun() => nil
