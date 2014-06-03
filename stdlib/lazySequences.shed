@@ -44,12 +44,7 @@ def concat fun[T] => (sequenceOfSequences: Sequence[Sequence[T]]) =>
 
 def ConcatSequence class[T] => (sequenceOfSequences: Sequence[T]) => ::
     members::
-        currentItem,
-        head fun() => headSequence.head(),
-        tail fun() => concat[T](sequences.cons(
-            headSequence.tail(),
-            sequenceOfSequences.tail()
-        ))
+        currentItem
     
     def currentItem fun() => let
         val itemOfSequences = sequenceOfSequences.currentItem()
