@@ -11,8 +11,7 @@ import _hacks;
 
 def Nil class() => ::
     members::
-        // TODO: use nil once variable dependency resolution works properly
-        currentItem fun() => Nil()
+        currentItem fun() => nil
 
 val nil = Nil();
 
